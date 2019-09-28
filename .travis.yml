@@ -2,11 +2,10 @@ language: node_js
 sudo: false
 node_js:
   - "10"
-before_script:
-  - rm -r utils
 install:
   - npm install
 script:
   - cd ./src/demo && npm install && cd ../../
   - npm run build
+  - cd ./src && rm !(init.js | demo) && cd ../
   - npm publish

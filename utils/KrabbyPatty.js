@@ -14,10 +14,17 @@ const getExpress_1 = __importDefault(require("./lib/getExpress"));
 const path = __importStar(require("path"));
 const loadFood_1 = __importDefault(require("./lib/loadFood"));
 const SECCESS_LOG = `\n🍔  Server run at \x1B[1;32mhttp://localhost:`;
-function krabbyPatty(option = {}) {
+const defaultConfig = { port: 3000 };
+function krabbyPatty(option = { config: defaultConfig }) {
     const config = option.config;
     const baseDir = config.baseDir || process.cwd();
-    const BaseModule = option.module || require(path.join(baseDir, "./base.module.ts")).default;
+    let BaseModule;
+    try {
+        BaseModule = option.module || require(path.join(baseDir, "./base.module.ts")).default;
+    }
+    catch (_e) {
+        BaseModule = require('./lib/baseModule').default;
+    }
     let app = getExpress_1.default();
     let baseModule = new BaseModule();
     const food = new loadFood_1.default({ baseDir, module, app });
@@ -29,4 +36,4 @@ function krabbyPatty(option = {}) {
     });
 }
 exports.default = krabbyPatty;
-//# sourceMappingURL=KrabbyPatty.js.map
+//# sourceMappingURL=krabbyPatty.js.map

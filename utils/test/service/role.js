@@ -16,7 +16,7 @@ const Service_1 = __importDefault(require("../../interface/Service"));
 class RoleService extends Service_1.default {
     getRole() {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log('成功');
+            console.log('success');
             return true;
         });
     }

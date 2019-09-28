@@ -1,3 +1,3 @@
-import BaseModule from '../interface/Module';
-export default class UserModule extends BaseModule {
+import Module from '../interface/Module';
+export default class BaseModule extends Module {
 }
