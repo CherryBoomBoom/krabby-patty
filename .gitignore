@@ -1,3 +1,4 @@
 node_modules
 utils
+.DS_Store
 src/demo/node_modules
