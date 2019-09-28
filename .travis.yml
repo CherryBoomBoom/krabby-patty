@@ -8,7 +8,8 @@ script:
   - cd ./src/demo && npm install && cd ../../
   - npm run build
   - cd ./src && rm -r !(init.js | demo) && cd ../
-  - npm login
-  - echo 'ss'
-  - echo 'ss'
-  - echo 'ss'
+  - npm login << EOF
+   ss 
+   ss 
+   ss 
+   EOF
