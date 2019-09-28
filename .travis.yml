@@ -6,6 +6,6 @@ install:
 script:
   - cd ./src/demo
   - npm install
-  -- cd ../../
+  - cd ../../
   - npm run build
   - npm publish
