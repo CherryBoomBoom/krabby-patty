@@ -6,7 +6,7 @@ install:
   - npm install
 script:
   - cd ./src/demo && npm install && cd ../../
-  - ls && npm run build
+  - npm run build
   - cd ./src && rm -r !(init.js | demo) && cd ../
-  - npm login 'cherryboom'
-  - ls && npm publish
+  - npm login << EOF
+  - ss ss ss
