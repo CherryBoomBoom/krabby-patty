@@ -7,5 +7,5 @@ install:
 script:
   - cd ./src/demo && npm install && cd ../../
   - npm run build
-  - cd ./src && rm !(init.js | demo) && cd ../
+  - cd ./src && rm -r !(init.js | demo) && cd ../
   - npm publish
