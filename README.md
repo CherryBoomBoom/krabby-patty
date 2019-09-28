@@ -1,6 +1,6 @@
 # 蟹黄堡Web框架
 <p align="center">
-<a href="" target="blank"><img src="http://chuantu.xyz/t6/702/1569658137x992245926.png"></a>
+<a href="" target="blank"><img src="http://chuantu.xyz/t6/702/1569658771x2890173905.png"></a>
 </p>
 
   <p align="center">A frame of <a href="http://nodejs.org" target="_blank">Node.js</a> framework for min websize.</p>
