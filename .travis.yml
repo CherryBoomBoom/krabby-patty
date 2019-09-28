@@ -1,6 +1,11 @@
 language: node_js
 node_js:
-    - '10'
+  - "10"
+install:
+  - npm install
 script:
-    - npm run build
-    - npm publish
+  - cd ./src/demo
+  - npm install
+  -- cd ../../
+  - npm run build
+  - npm publish
