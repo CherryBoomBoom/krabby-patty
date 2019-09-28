@@ -1,11 +1,10 @@
 language: node_js
+sudo: false
 node_js:
   - "10"
 install:
   - npm install
 script:
-  - cd ./src/demo
-  - npm install
-  - cd ../../
+  - cd ./src/demo && npm install && cd ../../
   - npm run build
   - npm publish
