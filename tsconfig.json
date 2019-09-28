@@ -12,5 +12,8 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "pretty": true
-  }
+  },
+  "exclude": [
+    "src/demo/node_modules"
+  ]
 }
