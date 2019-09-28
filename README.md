@@ -1,7 +1,7 @@
 # krabby-patty
-<div style="height:160px;line-height:180px;text-align:center;font-size:120px">
-<a href="" target="blank">🍔</a>
-</div>
+<p align="center">
+<a href="" target="blank"><img src="https://oss.zyfz.cn/hamburger/f54fd817b5f3f9f9c19678d691f16b91.png"></a>
+</p>
 
   <p align="center">A frame of <a href="http://nodejs.org" target="_blank">Node.js</a> framework for min websize.</p>
     <p align="center">
