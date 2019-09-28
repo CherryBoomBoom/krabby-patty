@@ -1,0 +1,42 @@
+{
+    "name": "krabby-patty",
+    "version": "1.1.2",
+    "main": "./utils/index.js",
+    "description": "A web framework's framework for Node.js",
+    "scripts": {
+        "start": "node utils/app.js",
+        "dev": "ts-node src/app.ts",
+        "test": "ts-node src/test/app.ts",
+        "build": "tsc"
+    },
+    "bin": {
+        "krabby-patty": "./src/init.js"
+    },
+    "typings": "utils/index.d.ts",
+    "dependencies": {
+        "axios": "^0.18.0",
+        "body-parser": "^1.19.0",
+        "crypto": "^1.0.1",
+        "express": "4.17.1",
+        "globby": "^10.0.1"
+    },
+    "devDependencies": {
+        "@types/mocha": "^2.2.40",
+        "@types/node": "^7.0.12",
+        "ts-node": "^6.1.1",
+        "tslint": "^5.0.0",
+        "typescript": "^3.0.0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/eggjs/egg.git"
+    },
+    "keywords": [
+        "framework",
+        "express",
+        "http",
+        "web"
+    ],
+    "author": "amm",
+    "license": "ISC"
+}

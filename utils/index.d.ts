@@ -1,0 +1,14 @@
+import krabbyPattyType from './krabbyPatty';
+import ControllerType from './interface/Controller';
+import ServiceType from './interface/Service';
+import ModuleType from './interface/Module';
+import RouterType from './decorators/Router';
+import PostType from './decorators/Post';
+import GetType from './decorators/Get';
+export declare const krabbyPatty: typeof krabbyPattyType;
+export declare const Controller: typeof ControllerType;
+export declare const Service: typeof ServiceType;
+export declare const Module: typeof ModuleType;
+export declare const Router: typeof RouterType;
+export declare const Post: typeof PostType;
+export declare const Get: typeof GetType;
