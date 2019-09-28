@@ -1,4 +1,4 @@
-# krabby-patty
+# 蟹黄堡Web框架
 <p align="center">
 <a href="" target="blank"><img src="https://oss.zyfz.cn/hamburger/f54fd817b5f3f9f9c19678d691f16b91.png"></a>
 </p>
@@ -17,11 +17,39 @@
 - 以标准目录树作为装载依据
 
 ## 快速开始
+### 脚手架
     npm i -g krabby-patty
     krabby-patty init demo
     cd demo
     npm i
     npm run test
+### 标准入口
+    //app.ts
+    import {krabbyPatty} from "krabby—patty";
+    krabbyPatty()
+
+    //controller/demo.ts
+    import {Controller,Router,Get} from 'krabby—patty
+    @Router('')
+    export default class DemoController extends BaseController{
+      @Get('/')
+      public demo(){
+      }
+      @Get('/service')
+      public getService(){
+        return this.s.demo.demo()
+      }
+    }
+
+    //service/demo.ts
+    import {Service} from 'krabby—patty'
+    export default class DemoService extends Service{
+      public async demo(){
+        console.log('成功');
+        return 'ok'
+      }
+
+}
 
 ## 组件
 
