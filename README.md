@@ -144,3 +144,5 @@
 - config 加载依据`base.config`,dev 环境 assign`dev.config`,非 dev 环境 assign`online.config`
 - 中间件的组合，中间件的加载顺序为**APPLICATION**->**MODULE**->**CONTROLLER**->**ROUTER**
 - 单模块的加载和多模块的加载
+- service获取ctx
+- service this获取不到当前class属性

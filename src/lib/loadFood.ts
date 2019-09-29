@@ -32,7 +32,7 @@ export default class LoadindFood {
     exportModule = new Proxy(exportModule, {
       get: (target, property) => {
         if (typeof target[property] === "function") {
-          return target[property].bind(Object.assign(target,module));
+          return target[property].bind(Object.assign(module,target));
         }
       }
     });
