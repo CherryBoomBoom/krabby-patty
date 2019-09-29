@@ -20,19 +20,30 @@ export default class LoadindFood {
   private loadIngredients() {
     let task: any[] = [];
     task.push(
-      this.loadController.bind(this),
+      this.loadModel.bind(this),
       this.loadService.bind(this),
-      this.loadModel.bind(this)
+      this.loadController.bind(this),
     );
     task.map(i => {
       i();
     });
   }
+  private loadServiceToModule(exportModule: any, module: any = this.module){
+    exportModule = new Proxy(exportModule, {
+      get: (target, property) => {
+        if (typeof target[property] === "function") {
+          return target[property].bind(Object.assign(target,module));
+        }
+      }
+    });
+    return exportModule;
+  }
   private loadToModule(exportModule: any, module: any = this.module) {
     exportModule = new Proxy(exportModule, {
       get: (target, property) => {
         if (typeof target[property] === "function") {
-          return target[property].bind(module);
+          Object.setPrototypeOf(target,module)
+          return target[property];
         }
       }
     });
@@ -52,7 +63,8 @@ export default class LoadindFood {
     ctx.url = req.url;
     ctx.method = req.method;
     ctx.headers = req.headers;
-    return await callback.bind(ctx).apply();
+    let itemPrototype = Object.assign(this.module,{query:req.query})
+    return await callback.bind(itemPrototype).apply();
   }
   private loadRouter(param: any, baseUrl: string) {
     for (let path of Object.keys(param)) {
@@ -106,7 +118,7 @@ export default class LoadindFood {
       if (!MODULE) continue;
       let { name, exportModule } = MODULE;
       exportModule = new exportModule(this.module);
-      exportModule = this.loadToModule(exportModule);
+      exportModule = this.loadServiceToModule(exportModule);
       service[name] = exportModule;
     }
     Object.defineProperty(this.module, folderPath[0], { value: service });
