@@ -28,23 +28,11 @@ export default class LoadindFood {
       i();
     });
   }
-  private loadServiceToModule(exportModule: any, module: any = this.module){
-    exportModule = new Proxy(exportModule, {
-      get: (target, property) => {
-        if (typeof target[property] === "function") {
-          return target[property].bind(Object.assign(module,target));
-        }
-      }
-    });
-    return exportModule;
-  }
   private loadToModule(exportModule: any, module: any = this.module) {
     exportModule = new Proxy(exportModule, {
       get: (target, property) => {
-        if (typeof target[property] === "function") {
-          Object.setPrototypeOf(target,module)
-          return target[property];
-        }
+        if(target[property])return target[property]
+        else return module[property]
       }
     });
     return exportModule;
@@ -118,7 +106,7 @@ export default class LoadindFood {
       if (!MODULE) continue;
       let { name, exportModule } = MODULE;
       exportModule = new exportModule(this.module);
-      exportModule = this.loadServiceToModule(exportModule);
+      exportModule = this.loadToModule(exportModule);
       service[name] = exportModule;
     }
     Object.defineProperty(this.module, folderPath[0], { value: service });
