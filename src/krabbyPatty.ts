@@ -14,8 +14,8 @@ export default function krabbyPatty(option:{config?:any,module?:any} = {config:d
   }catch(_e){
     BaseModule = require('./lib/baseModule').default;
   }
-  let app = getExpress();
   let baseModule = new BaseModule();
+  let app = getExpress(baseModule);
   const food = new loadFood({ baseDir, module, app });
   baseModule = food.module;
   app = food.app;

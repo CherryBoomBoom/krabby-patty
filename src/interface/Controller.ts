@@ -5,6 +5,7 @@ export default class Controller extends Application{
   protected body:{[key:string]:any}
   protected query:{[key:string]:any}
   protected header:{[key:string]:any}
+  protected middleware:Function[]
   constructor(app){
     super(app)
     this.app.router = this.router

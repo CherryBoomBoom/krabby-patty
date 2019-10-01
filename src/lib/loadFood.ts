@@ -3,6 +3,7 @@ import * as fs from "fs";
 import globby = require("globby");
 import BaseController from "../interface/Controller";
 import BaseService from "../interface/Service";
+import express = require("express");
 
 export default class LoadindFood {
   public module: any;
@@ -22,17 +23,15 @@ export default class LoadindFood {
     task.push(
       this.loadModel.bind(this),
       this.loadService.bind(this),
-      this.loadController.bind(this),
+      this.loadController.bind(this)
     );
-    task.map(i => {
-      i();
-    });
+    task.map(i => i());
   }
   private loadToModule(exportModule: any, module: any = this.module) {
     exportModule = new Proxy(exportModule, {
       get: (target, property) => {
-        if(target[property])return target[property]
-        else return module[property]
+        if (target[property]) return target[property];
+        else return module[property];
       }
     });
     return exportModule;
@@ -51,17 +50,21 @@ export default class LoadindFood {
     ctx.url = req.url;
     ctx.method = req.method;
     ctx.headers = req.headers;
-    let itemPrototype = Object.assign(this.module,{query:req.query})
+    let itemPrototype = Object.assign(this.module, { query: req.query });
     return await callback.bind(itemPrototype).apply();
   }
-  private loadRouter(param: any, baseUrl: string) {
+  private loadRouter(param: any, baseUrl: string,middlewares:Function[]) {
+    let Router = express.Router()
+    for(let i of middlewares)Router.use(i)
     for (let path of Object.keys(param)) {
-      let { callback, method = "POST" } = param[path];
-      const router = this.app.route(baseUrl + path);
+      let { callback, method = "POST",middlewares=[] } = param[path];
+      if(!!middlewares.length)for(let middleware of middlewares) Router.use(path,middleware)
+      const router = Router.route(path);
       router[method.toLowerCase()](async (req, res) => {
         res.send(await this.asyncCallback(callback, req));
       });
     }
+    this.app.use(baseUrl,Router)
   }
   private loadFile({ directory, filepath, folderPath }) {
     const fullpath = path.resolve(directory, filepath);
@@ -89,8 +92,8 @@ export default class LoadindFood {
       if (!MODULE) continue;
       let { name, exportModule } = MODULE;
       exportModule = new exportModule(this.module);
-      let { router, baseUrl } = exportModule;
-      this.loadRouter(router, baseUrl);
+      let { router, baseUrl,middlewares } = exportModule;
+      this.loadRouter(router, baseUrl,middlewares);
       exportModule = this.loadToModule(exportModule);
       controller[name] = exportModule;
     }
