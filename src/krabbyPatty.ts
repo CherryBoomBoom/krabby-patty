@@ -4,9 +4,10 @@ import loadFood from "./lib/loadFood";
 
 const SECCESS_LOG=`\n🍔  Server run at \x1B[1;32mhttp://localhost:`
 const defaultConfig = {port:3000}
-
+export const GLOBAL:{app:any,option:any} = {app:void 0,option:{}}
 export default function krabbyPatty(option:{config?:any,module?:any} = {config:defaultConfig}) {
   const config = option.config;
+  GLOBAL.option = option
   const baseDir = config.baseDir || process.cwd();
   let BaseModule
   try{
@@ -20,7 +21,9 @@ export default function krabbyPatty(option:{config?:any,module?:any} = {config:d
   baseModule = food.module;
   app = food.app;
   app.module = baseModule;
+  app = require('http').createServer(app);
   app.listen(config.port, () => {
     console.log(SECCESS_LOG+config.port+'\x1B[0m');
   });
+  GLOBAL.app = app
 }

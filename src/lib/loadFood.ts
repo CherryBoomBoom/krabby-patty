@@ -4,12 +4,13 @@ import globby = require("globby");
 import BaseController from "../interface/Controller";
 import BaseService from "../interface/Service";
 import express = require("express");
+import krabbyPatty from '../krabbyPatty'
 
 export default class LoadindFood {
   public module: any;
   public app: any;
-  private readonly baseDir: string;
-  private readonly ingredients: {
+  private baseDir: string;
+  private ingredients: {
     [key: string]: { [key: string]: any };
   } = {};
   constructor(option) {
@@ -23,7 +24,8 @@ export default class LoadindFood {
     task.push(
       this.loadModel.bind(this),
       this.loadService.bind(this),
-      this.loadController.bind(this)
+      this.loadController.bind(this),
+      this.reloadFile.bind(this),
     );
     task.map(i => i());
   }
@@ -35,6 +37,25 @@ export default class LoadindFood {
       }
     });
     return exportModule;
+  }
+  private reloadFile(){
+    const filepaths = globby.sync(["**/*.ts"], { cwd: this.baseDir })
+    for(let i of filepaths){
+      let directory = path.resolve(this.baseDir, i);
+      let startTime = Date.now()
+      fs.watch(directory,()=>{
+        if(Date.now()>startTime+500){
+          const GLOBAL = require('../krabbyPatty').GLOBAL
+          GLOBAL.app.close()
+          delete GLOBAL.app
+          delete this.app
+          delete this.module
+          delete this.ingredients
+          delete this.baseDir
+          krabbyPatty(GLOBAL.option)
+        }
+      })
+    }
   }
   private getFilepaths(folderPath: string) {
     let directory = path.resolve(this.baseDir, folderPath);

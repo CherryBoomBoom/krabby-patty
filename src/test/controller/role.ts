@@ -9,14 +9,14 @@ function testFunction3(req,res,next){
 function testFunction4(req,res,next){
   console.log('中间件4');
   next()
-  console.log('中间件4s');
+  console.log('中间件4s')
 }
 @Router('/user')
 export default class RoleController extends Controller {
   private readonly middlewares=[testFunction3]
   @Get('/login')
   public login() {
-    return 'hello world'
+    return 'hello world';
   }
   @Get({path:'/create',middlewares:[testFunction4]})
   public create() {
