@@ -1,6 +1,6 @@
 {
     "name": "krabby-patty",
-    "version": "1.2.2",
+    "version": "1.2.3",
     "main": "./utils/index.js",
     "description": "A web framework's framework for Node.js",
     "scripts": {
