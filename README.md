@@ -28,16 +28,27 @@
     import {krabbyPatty} from "krabby—patty";
     krabbyPatty()
 
+    //base.module.ts
+    import {Module} from 'krabby—patty
+    export default class BaseModule extends Module{
+      readonly middlewares = []
+    }
+
     //controller/demo.ts
     import {Controller,Router,Get} from 'krabby—patty
     @Router('')
     export default class DemoController extends BaseController{
+      readonly middlewares=[testFunction3]
       @Get('/')
       public demo(){
       }
       @Get('/service')
       public getService(){
         return this.s.demo.demo()
+      }
+      @Get({path:'/service',middlewares:[]})
+      public mid(){
+        return
       }
     }
 
@@ -140,7 +151,7 @@
 
 ## TODO
 
-- dev 自动重新重启
+- dev 自动重新重启 暂时是dev重启了server
 - config 加载依据`base.config`,dev 环境 assign`dev.config`,非 dev 环境 assign`online.config`
 - 单模块的加载和多模块的加载
 - ts-helper

@@ -13,7 +13,7 @@ function testFunction4(req,res,next){
 }
 @Router('/user')
 export default class RoleController extends Controller {
-  private readonly middlewares=[testFunction3]
+  readonly middlewares=[testFunction3]
   @Get('/login')
   public login() {
     return 'hello world';
