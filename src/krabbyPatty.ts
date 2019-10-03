@@ -51,11 +51,13 @@ export default function krabbyPatty(
   if (isDev) reloadFile(baseDir);
 }
 const reloadFile = baseDir => {
-  const filepaths = globby.sync(["**/*.ts"], { cwd: baseDir });
+  // const filepaths = globby.sync(["**/*.ts","**/*.js"], { cwd: baseDir });
+  const filepaths = require.cache;
   let watcherArray: any[] = [];
-  for (let i of filepaths) {
-    let directory = path.resolve(baseDir, i);
-    let itemWatcher = fs.watch(directory, async () => {
+  for(let filepath of Object.keys(filepaths)){
+    let relativePath = path.relative(baseDir,filepath)
+    if(/\.\./.test(relativePath))continue
+    let itemWatcher = fs.watch(filepath, async () => {
       console.log("\x1B[1;33mReCooking...");
       await GLOBAL.app.close();
       watcherArray.map(i => i.close());
@@ -66,4 +68,17 @@ const reloadFile = baseDir => {
     });
     watcherArray.push(itemWatcher);
   }
+  // for (let i of filepaths) {
+  //   let directory = path.resolve(baseDir, i);
+  //   let itemWatcher = fs.watch(directory, async () => {
+  //     console.log("\x1B[1;33mReCooking...");
+  //     await GLOBAL.app.close();
+  //     watcherArray.map(i => i.close());
+  //     // let modulePath = path.join(__dirname, "./krabbyPatty");
+  //     // cleanCache(modulePath);
+  //     // const reloadKrabbyPatty = require(modulePath).default;
+  //     krabbyPatty(GLOBAL.option, true);
+  //   });
+  //   watcherArray.push(itemWatcher);
+  // }
 };

@@ -46,7 +46,7 @@ export default class LoadFood {
     let directory = path.resolve(this.baseDir, folderPath);
     return {
       directory,
-      filepaths: globby.sync(["**/*.ts"], { cwd: directory })
+      filepaths: globby.sync(["**/*.ts","**/*.js"], { cwd: directory })
     };
   }
   private async asyncCallback(callback, req) {
@@ -139,7 +139,6 @@ export default class LoadFood {
       });
       if (itemModule.module) loadedModule[key] = itemModule.module;
     }
-    console.log(loadedModule);
     if (!!Object.keys(loadedModule)) this.module.module = loadedModule;
   }
 }
