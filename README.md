@@ -32,6 +32,7 @@
     import {Module} from 'krabby—patty
     export default class BaseModule extends Module{
       readonly middlewares = []
+      readonly modules = []
     }
 
     //controller/demo.ts
@@ -151,6 +152,16 @@
 
 ## TODO
 
-- 单模块的加载和多模块的加载
 - ts-helper
 - orm加载 内置compent
+- 仅加载的模块修改时重启
+- s,c没有语义，考虑换成service,controller
+- 全局错误的抛出测试
+- 规范生成api文档，及错误日志，做错误日志上报
+- 考虑做多线程
+- 考虑开发独立的参数校验模块
+
+## 说明
+- 中间件执行顺序为base.module-item.module-controller-router,其中module可无限嵌套
+- module嵌套在启动目录的base.module起,根据引用模块加载子module
+- 启动时可不输入任何参数默认启动端口3000，base.module不存在则视为不需要base.module中间件，当前目录为项目目录，不向下嵌套

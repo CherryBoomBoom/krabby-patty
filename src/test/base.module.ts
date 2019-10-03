@@ -1,4 +1,6 @@
 import Module from '../interface/Module'
+import userModule from './user/user.module'
+// let userModule = require.resolve('./user/base.module')
 function testFunction(req,res,next){
   console.log('中间件1');
   next()
@@ -11,5 +13,6 @@ function testFunction2(req,res,next){
 }
 export default class BaseModule extends Module{
   readonly middlewares = [testFunction,testFunction2]
+  readonly modules=[userModule]
   readonly tt="ss"
 }

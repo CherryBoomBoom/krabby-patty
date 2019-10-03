@@ -1,3 +1,4 @@
+import * as path from "path";
 export default class Application {
   protected app: {
     module: any,
@@ -8,6 +9,7 @@ export default class Application {
   };
   protected s: { [key: string]: any };
   protected c: { [key: string]: any };
+  protected path: string;
   constructor(app) {
     this.app = app;
   }

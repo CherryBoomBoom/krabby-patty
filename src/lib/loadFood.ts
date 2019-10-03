@@ -5,20 +5,22 @@ import BaseController from "../interface/Controller";
 import BaseService from "../interface/Service";
 import express = require("express");
 import cleanCache from "../lib/cleanCache";
+import getModulePath from "../lib/getModulePath";
 
-export default class LoadindFood {
+const loadedModuleDir = [];
+export default class LoadFood {
   public module: any;
   public app: any;
   private baseDir: string;
-  private reload: boolean;
   private ingredients: {
     [key: string]: { [key: string]: any };
   } = {};
   constructor(option) {
     this.baseDir = option.baseDir;
+    if (loadedModuleDir.includes(this.baseDir)) return;
+    else loadedModuleDir.push(this.baseDir);
     this.module = option.module;
     this.app = option.app;
-    this.reload = option.reload;
     this.loadIngredients();
   }
   private loadIngredients() {
@@ -27,6 +29,7 @@ export default class LoadindFood {
       this.loadModel.bind(this),
       this.loadService.bind(this),
       this.loadController.bind(this),
+      this.loadModule.bind(this)
     );
     task.map(i => i());
   }
@@ -56,23 +59,24 @@ export default class LoadindFood {
     let itemPrototype = Object.assign(this.module, { query: req.query });
     return await callback.bind(itemPrototype).apply();
   }
-  private loadRouter(param: any, baseUrl: string,middlewares:Function[]) {
-    let Router = express.Router()
-    for(let i of middlewares)Router.use(i)
+  private loadRouter(param: any, baseUrl: string, middlewares: Function[]) {
+    let Router = express.Router();
+    for (let i of middlewares) Router.use(i);
     for (let path of Object.keys(param)) {
-      let { callback, method = "POST",middlewares=[] } = param[path];
-      if(!!middlewares.length)for(let middleware of middlewares) Router.use(path,middleware)
+      let { callback, method = "POST", middlewares = [] } = param[path];
+      if (!!middlewares.length)
+        for (let middleware of middlewares) Router.use(path, middleware);
       const router = Router.route(path);
       router[method.toLowerCase()](async (req, res) => {
         res.send(await this.asyncCallback(callback, req));
       });
     }
-    this.app.use(baseUrl,Router)
+    this.app.use(baseUrl, Router);
   }
   private loadFile({ directory, filepath, folderPath }) {
     const fullpath = path.resolve(directory, filepath);
     if (!fs.statSync(fullpath).isFile()) return void 0;
-    cleanCache(fullpath)
+    cleanCache(fullpath);
     let exportModule = require(fullpath);
     let moduleName = path.basename(fullpath);
     moduleName = moduleName.slice(0, moduleName.lastIndexOf("."));
@@ -95,8 +99,8 @@ export default class LoadindFood {
       if (!MODULE) continue;
       let { name, exportModule } = MODULE;
       exportModule = new exportModule(this.module);
-      let { router, baseUrl,middlewares } = exportModule;
-      this.loadRouter(router, baseUrl,middlewares);
+      let { router, baseUrl, middlewares } = exportModule;
+      this.loadRouter(router, baseUrl, middlewares);
       exportModule = this.loadToModule(exportModule);
       controller[name] = exportModule;
     }
@@ -119,5 +123,23 @@ export default class LoadindFood {
   }
   private async loadModel() {
     const folderPath = "model";
+  }
+  private async loadModule() {
+    let modules = this.module.modules || [];
+    let loadedModule = {};
+    for (let i of modules) {
+      let modulePath = getModulePath(i);
+      let baseDir = path.dirname(modulePath);
+      let ext = path.extname(modulePath);
+      let key = path.basename(modulePath).replace(ext, "").replace('.module','');
+      let itemModule = new LoadFood({
+        baseDir,
+        module: new i(),
+        app: this.app
+      });
+      if (itemModule.module) loadedModule[key] = itemModule.module;
+    }
+    console.log(loadedModule);
+    if (!!Object.keys(loadedModule)) this.module.module = loadedModule;
   }
 }
