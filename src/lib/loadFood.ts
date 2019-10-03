@@ -4,11 +4,13 @@ import globby = require("globby");
 import BaseController from "../interface/Controller";
 import BaseService from "../interface/Service";
 import express = require("express");
+import cleanCache from "../lib/cleanCache";
 
 export default class LoadindFood {
   public module: any;
   public app: any;
   private baseDir: string;
+  private reload: boolean;
   private ingredients: {
     [key: string]: { [key: string]: any };
   } = {};
@@ -16,6 +18,7 @@ export default class LoadindFood {
     this.baseDir = option.baseDir;
     this.module = option.module;
     this.app = option.app;
+    this.reload = option.reload;
     this.loadIngredients();
   }
   private loadIngredients() {
@@ -69,8 +72,8 @@ export default class LoadindFood {
   private loadFile({ directory, filepath, folderPath }) {
     const fullpath = path.resolve(directory, filepath);
     if (!fs.statSync(fullpath).isFile()) return void 0;
+    cleanCache(fullpath)
     let exportModule = require(fullpath);
-
     let moduleName = path.basename(fullpath);
     moduleName = moduleName.slice(0, moduleName.lastIndexOf("."));
     if (exportModule.__esModule) {

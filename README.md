@@ -151,10 +151,6 @@
 
 ## TODO
 
-- dev 自动重新重启 暂时是dev重启了server
-- config 加载依据`base.config`,dev 环境 assign`dev.config`,非 dev 环境 assign`online.config`
 - 单模块的加载和多模块的加载
 - ts-helper
-- 自定义loader
-- orm加载
-- model/entities加载
+- orm加载 内置compent

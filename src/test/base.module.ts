@@ -11,4 +11,5 @@ function testFunction2(req,res,next){
 }
 export default class BaseModule extends Module{
   readonly middlewares = [testFunction,testFunction2]
+  readonly tt="ss"
 }
