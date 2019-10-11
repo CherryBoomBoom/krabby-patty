@@ -3,6 +3,7 @@ import * as fs from "fs";
 import globby = require("globby");
 import BaseController from "../interface/Controller";
 import BaseService from "../interface/Service";
+import BaseModule from "../interface/Module";
 import express = require("express");
 import krabbyPatty from '../krabbyPatty'
 
@@ -98,8 +99,8 @@ export default class LoadindFood {
       exportModule =
         "default" in exportModule ? exportModule.default : exportModule;
     }
-    let baseClass = Object.getPrototypeOf(exportModule);
-    if (baseClass !== this[Symbol.for(folderPath)]) return void 0;
+    let baseClass = Object.getPrototypeOf(Object.getPrototypeOf(exportModule));
+    if (baseClass !== BaseModule) return void 0;
     if (!this.ingredients[folderPath]) this.ingredients[folderPath] = {};
     return { name: moduleName, exportModule };
   }

@@ -1,5 +1,5 @@
-import Service from '../../interface/Service'
-export default class RoleService extends Service {
+import BaseModule from '../base.module'
+export default class RoleService extends BaseModule {
   public async getRole() {
     return true
   }
