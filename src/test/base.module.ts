@@ -1,5 +1,5 @@
 import Module from '../interface/Module'
-import userModule from './user/user.module'
+import userModule from './user/base.module'
 // let userModule = require.resolve('./user/base.module')
 function testFunction(req,res,next){
   console.log('中间件1');

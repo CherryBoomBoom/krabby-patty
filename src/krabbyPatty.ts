@@ -1,8 +1,8 @@
 import * as path from "path";
 import * as fs from "fs";
-import globby = require("globby");
 import cleanCache from "./lib/cleanCache";
 import getExpress from "./lib/getExpress";
+import loadTsHelper from './lib/loadTsHelper'
 
 const SECCESS_LOG = `\n🍔  Server run at \x1B[1;32mhttp://localhost:`;
 export const GLOBAL: { app: any; option: any } = { app: void 0, option: {} };
@@ -49,9 +49,9 @@ export default function krabbyPatty(
   app.listen(config.port, () => console.log(seccessMessage));
   GLOBAL.app = app;
   if (isDev) reloadFile(baseDir);
+  loadTsHelper(MODULE)
 }
 const reloadFile = baseDir => {
-  // const filepaths = globby.sync(["**/*.ts","**/*.js"], { cwd: baseDir });
   const filepaths = require.cache;
   let watcherArray: any[] = [];
   for(let filepath of Object.keys(filepaths)){
@@ -61,24 +61,8 @@ const reloadFile = baseDir => {
       console.log("\x1B[1;33mReCooking...");
       await GLOBAL.app.close();
       watcherArray.map(i => i.close());
-      // let modulePath = path.join(__dirname, "./krabbyPatty");
-      // cleanCache(modulePath);
-      // const reloadKrabbyPatty = require(modulePath).default;
       krabbyPatty(GLOBAL.option, true);
     });
     watcherArray.push(itemWatcher);
   }
-  // for (let i of filepaths) {
-  //   let directory = path.resolve(baseDir, i);
-  //   let itemWatcher = fs.watch(directory, async () => {
-  //     console.log("\x1B[1;33mReCooking...");
-  //     await GLOBAL.app.close();
-  //     watcherArray.map(i => i.close());
-  //     // let modulePath = path.join(__dirname, "./krabbyPatty");
-  //     // cleanCache(modulePath);
-  //     // const reloadKrabbyPatty = require(modulePath).default;
-  //     krabbyPatty(GLOBAL.option, true);
-  //   });
-  //   watcherArray.push(itemWatcher);
-  // }
 };

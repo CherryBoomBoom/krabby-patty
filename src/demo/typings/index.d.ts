@@ -10,7 +10,7 @@ import BaseModule from "../base.module";
 declare module "../base.module" {
   export default interface BaseModule {
     // add(x, y);
-    a:string
-    v:string
+    vvv:string
+    sss:string
   }
 }

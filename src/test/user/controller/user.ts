@@ -1,6 +1,7 @@
 import Router from '../../../decorators/Router'
 import Get from '../../../decorators/Get'
 import Controller from '../../../interface/Controller'
+import UserModule from '../base.module'
 function testFunction3(req,res,next){
   console.log('中间件3');
   next()
@@ -17,7 +18,7 @@ function testFunction5(req,res,next){
   console.log('中间件5s')
 }
 @Router('/ro')
-export default class RoleController extends Controller {
+export default class RoleController extends UserModule {
   readonly middlewares=[testFunction3,testFunction4]
   @Get('/login')
   public login() {
@@ -25,6 +26,7 @@ export default class RoleController extends Controller {
   }
   @Get({path:'/create',middlewares:[testFunction5]})
   public create() {
+    this.asadasddd
     return true
   }
 }

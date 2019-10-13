@@ -9,6 +9,10 @@ import cleanCache from "../lib/cleanCache";
 import getModulePath from "../lib/getModulePath";
 
 const loadedModuleDir = [];
+
+export const BASE_DIR = Symbol('BASE_DIR')
+export const CONTROLLER_DIR = Symbol('CONTROLLER_DIR')
+export const SERVICE_DIR = Symbol('SERVICE_DIR')
 export default class LoadFood {
   public module: any;
   public app: any;
@@ -16,11 +20,13 @@ export default class LoadFood {
   private ingredients: {
     [key: string]: { [key: string]: any };
   } = {};
+
   constructor(option) {
     this.baseDir = option.baseDir;
     if (loadedModuleDir.includes(this.baseDir)) return;
     else loadedModuleDir.push(this.baseDir);
     this.module = option.module;
+    this.module[BASE_DIR] = this.baseDir
     this.app = option.app;
     this.loadIngredients();
   }
@@ -30,7 +36,7 @@ export default class LoadFood {
       this.loadModel.bind(this),
       this.loadService.bind(this),
       this.loadController.bind(this),
-      this.loadModule.bind(this)
+      this.loadModule.bind(this),
     );
     task.map(i => i());
   }
@@ -47,7 +53,7 @@ export default class LoadFood {
     let directory = path.resolve(this.baseDir, folderPath);
     return {
       directory,
-      filepaths: globby.sync(["**/*.ts","**/*.js"], { cwd: directory })
+      filepaths: globby.sync(["**/*.ts", "**/*.js"], { cwd: directory })
     };
   }
   private async asyncCallback(callback, req) {
@@ -93,8 +99,9 @@ export default class LoadFood {
   private loadController() {
     let controller = {};
     const folderPath = "controller";
-    this[Symbol.for(folderPath)] = BaseController;
+    // this[Symbol.for(folderPath)] = BaseController;
     const { directory, filepaths } = this.getFilepaths(folderPath);
+    this.module[CONTROLLER_DIR]=filepaths
     for (let filepath of filepaths) {
       const MODULE = this.loadFile({ directory, filepath, folderPath });
       if (!MODULE) continue;
@@ -105,13 +112,14 @@ export default class LoadFood {
       exportModule = this.loadToModule(exportModule);
       controller[name] = exportModule;
     }
-    Object.defineProperty(this.module, folderPath[0], { value: controller });
+    Object.defineProperty(this.module, folderPath, { value: controller });
   }
   private loadService() {
     let service = {};
     const folderPath = "service";
-    this[Symbol.for(folderPath)] = BaseService;
+    // this[Symbol.for(folderPath)] = BaseService;
     const { directory, filepaths } = this.getFilepaths(folderPath);
+    this.module[SERVICE_DIR]=filepaths
     for (let filepath of filepaths) {
       const MODULE = this.loadFile({ directory, filepath, folderPath });
       if (!MODULE) continue;
@@ -120,19 +128,22 @@ export default class LoadFood {
       exportModule = this.loadToModule(exportModule);
       service[name] = exportModule;
     }
-    Object.defineProperty(this.module, folderPath[0], { value: service });
+    Object.defineProperty(this.module, folderPath, { value: service });
   }
-  private async loadModel() {
+  private loadModel() {
     const folderPath = "model";
   }
-  private async loadModule() {
+  private loadModule() {
     let modules = this.module.modules || [];
     let loadedModule = {};
     for (let i of modules) {
       let modulePath = getModulePath(i);
       let baseDir = path.dirname(modulePath);
       let ext = path.extname(modulePath);
-      let key = path.basename(modulePath).replace(ext, "").replace('.module','');
+      let key = path
+        .basename(modulePath)
+        .replace(ext, "")
+        .replace(".module", "");
       let itemModule = new LoadFood({
         baseDir,
         module: new i(),

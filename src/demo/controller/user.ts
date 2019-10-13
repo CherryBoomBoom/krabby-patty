@@ -1,7 +1,8 @@
-import { Controller, Router, Get } from "krabby-patty";
+import {  Router, Get } from "krabby-patty";
+import BaseModule from "../base.module";
 
 @Router('/')
-export default class userController extends Controller{
+export default class userController extends BaseModule{
 
   @Get('')
   hello(){
@@ -9,6 +10,7 @@ export default class userController extends Controller{
   }
   @Get('service')
   helloService(){
+    this.vvv
     return this.s.user.hello()
   }
 }
