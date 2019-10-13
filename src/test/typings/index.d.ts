@@ -6,11 +6,15 @@ import BaseModule from "../base.module";
 // export interface  BaseModule {
 //     asdasd:'sadsd'
 // }
-
+export default interface IService{
+  a:string,
+  b:string,
+  c:string,
+}
 declare module "../base.module" {
   export default interface BaseModule {
     // add(x, y);
-    a:string
+    service:service
     v:string
   }
 }
