@@ -2,7 +2,7 @@ import * as path from "path";
 import * as fs from "fs";
 import cleanCache from "./lib/cleanCache";
 import getExpress from "./lib/getExpress";
-import loadTsHelper from './lib/loadTsHelper'
+import LoadTsHelper from './lib/loadTsHelper'
 
 const SECCESS_LOG = `\n🍔  Server run at \x1B[1;32mhttp://localhost:`;
 export const GLOBAL: { app: any; option: any } = { app: void 0, option: {} };
@@ -49,7 +49,7 @@ export default function krabbyPatty(
   app.listen(config.port, () => console.log(seccessMessage));
   GLOBAL.app = app;
   if (isDev) reloadFile(baseDir);
-  loadTsHelper(MODULE)
+  new LoadTsHelper(MODULE)
 }
 const reloadFile = baseDir => {
   const filepaths = require.cache;
