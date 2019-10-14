@@ -19,12 +19,12 @@ function testFunction5(req,res,next){
 }
 @Router('/ro')
 export default class RoleController extends UserModule {
-  readonly middlewares=[testFunction3,testFunction4]
+	readonly middleware=[testFunction3,testFunction4]
   @Get('/login')
   public login() {
     return 'hello world';
   }
-  @Get({path:'/create',middlewares:[testFunction5]})
+	@Get({ path: '/create', middleware:[testFunction5]})
   public create() {
     this.asadasddd
     return true

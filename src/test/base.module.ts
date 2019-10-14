@@ -12,7 +12,7 @@ function testFunction2(req,res,next){
   console.log('中间件2s');
 }
 export default class BaseModule extends Module{
-  readonly middlewares = [testFunction,testFunction2]
+	readonly middleware = [testFunction,testFunction2]
   readonly modules=[userModule]
   readonly tt="ss"
 }

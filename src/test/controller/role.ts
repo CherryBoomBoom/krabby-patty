@@ -13,12 +13,12 @@ function testFunction4(req,res,next){
 }
 @Router('/user')
 export default class RoleController extends BaseModule {
-  readonly middlewares=[testFunction3]
+	readonly middleware=[testFunction3]
   @Get('/login')
   async [Symbol()]() {
     return 'hello world';
   }
-  @Get({path:'/create',middlewares:[testFunction4]})
+	@Get({ path: '/create', middleware:[testFunction4]})
   async [Symbol()]() {
     this.service.a
     return await this.s.role.getRole()
