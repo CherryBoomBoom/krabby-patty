@@ -53,7 +53,6 @@ export default class LoadFood {
 		let directory = path.resolve(this.baseDir, folderPath);
 		return {
 			directory,
-			//@ts-ignore
 			filePaths: globby.sync(["**/*.ts", "**/*.js"], { cwd: directory })
 		};
 	}
