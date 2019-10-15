@@ -8,6 +8,7 @@ import getModulePath from "../lib/getModulePath";
 
 const loadedModuleDir = [];
 
+export const MODULE_PATH = Symbol.for('MODULE_PATH')
 export const BASE_DIR = Symbol.for('BASE_DIR')
 export const CONTROLLER_DIR = Symbol.for('CONTROLLER_DIR')
 export const SERVICE_DIR = Symbol.for('SERVICE_DIR')
@@ -25,6 +26,7 @@ export default class LoadFood {
 		else loadedModuleDir.push(this.baseDir);
 		this.module = option.module;
 		this.module[BASE_DIR] = this.baseDir
+		this.module[MODULE_PATH] = option.modulePath || path.join(this.baseDir,'base.module.ts')
 		this.app = option.app;
 		this.loadIngredients();
 	}
@@ -143,6 +145,7 @@ export default class LoadFood {
 				.replace(".module", "");
 			let itemModule = new LoadFood({
 				baseDir,
+				modulePath,
 				module: new i(),
 				app: this.app
 			});

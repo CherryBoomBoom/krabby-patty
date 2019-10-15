@@ -26,7 +26,7 @@ export default class RoleController extends UserModule {
   }
 	@Get({ path: '/create', middleware:[testFunction5]})
   public create() {
-    this.asadasddd
+    // this.asadasddd
     return true
   }
 }
