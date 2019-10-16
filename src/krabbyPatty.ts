@@ -4,7 +4,7 @@ import cleanCache from "./lib/cleanCache";
 import getExpress from "./lib/getExpress";
 import LoadTsHelper from './lib/loadTsHelper'
 
-const SECCESS_LOG = `\n🍔  Server run at \x1B[1;32mhttp://localhost:`;
+const SUCCESS_LOG = `\n🍔  Server run at \x1B[1;32mhttp://localhost:`;
 export const GLOBAL: { app: any; option: any } = { app: void 0, option: {} };
 export default function krabbyPatty(
   option: { config?: any; module?: any } = { config: {} },
@@ -15,20 +15,20 @@ export default function krabbyPatty(
   let startPath = path.dirname(require.main.filename);
   const environment = process.argv[process.argv.length - 1];
   const isDev = /dev/g.test(environment);
-  const baseCofig = require("./base/config.default").default;
+  const baseConfig = require("./base/config.default").default;
   const baseModule = require("./base/base.module").default;
   if (!Object.keys(config).length) {
     try {
-      let cofigPath = path.join(startPath, "./config/config.default");
-      config = require(cofigPath).default;
+      let configPath = path.join(startPath, "./config/config.default");
+			config = require(configPath).default;
     } catch (_e) {
-      config = baseCofig;
+			config = baseConfig;
     }
   }
-  config.port = config.port || baseCofig.port;
-  const seccessMessage = reload
+	config.port = config.port || baseConfig.port;
+	const successMessage = reload
     ? "\x1B[1;32mCooking krabby patty success!\x1B[0m"
-    : SECCESS_LOG + config.port + "\x1B[0m";
+    : SUCCESS_LOG + config.port + "\x1B[0m";
   GLOBAL.option = Object.assign({}, option);
   const baseDir = config.baseDir || startPath;
   try {
@@ -46,18 +46,18 @@ export default function krabbyPatty(
   app = food.app;
   app.module = MODULE;
   app = require("http").createServer(app);
-  app.listen(config.port, () => console.log(seccessMessage));
+  app.listen(config.port, () => console.log(successMessage));
   GLOBAL.app = app;
   if (isDev) reloadFile(baseDir);
   new LoadTsHelper(MODULE)
 }
 const reloadFile = baseDir => {
-  const filepaths = require.cache;
+  const filePaths = require.cache;
   let watcherArray: any[] = [];
-  for(let filepath of Object.keys(filepaths)){
-    let relativePath = path.relative(baseDir,filepath)
+	for (let filePath of Object.keys(filePaths)){
+		let relativePath = path.relative(baseDir, filePath)
     if(/\.\./.test(relativePath))continue
-    let itemWatcher = fs.watch(filepath, async () => {
+		let itemWatcher = fs.watch(filePath, async () => {
       console.log("\x1B[1;33mReCooking...");
       await GLOBAL.app.close();
       watcherArray.map(i => i.close());

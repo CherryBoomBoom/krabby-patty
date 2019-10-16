@@ -1,4 +1,4 @@
-import { MODULE_PATH, BASE_DIR, CONTROLLER_DIR, SERVICE_DIR } from "./loadFood";
+import { MODULE_PATH, BASE_DIR, CONTROLLER_DIR, SERVICE_DIR, INGREDIENT } from "./loadFood";
 import * as path from "path";
 import * as fs from "fs";
 import delDir from './delDir'
@@ -23,6 +23,11 @@ export default class LoadTsHelper {
 		for (let i of Object.getOwnPropertySymbols(Module)) {
 			if (CONTROLLER_DIR === i) this.loadModelFile(baseDir, typeBaseDir, Module[i], 'controller');
 			if (SERVICE_DIR === i) this.loadModelFile(baseDir, typeBaseDir, Module[i], 'service')
+			if (INGREDIENT === i) {
+				for (let j of Object.keys(Module[i])) {
+					this.loadModelFile(baseDir, typeBaseDir, Module[i][j], j)	
+				}
+			}
 			if (MODULE_PATH === i) modulePath = Module[i]
 		}
 		let moduleNameArray = []

@@ -3,7 +3,7 @@
 <a href="" target="blank"><img src="https://i2.tiimg.com/700479/5ae4ce384fd00748.png"></a>
 </p>
 
-  <p align="center">A frame of <a href="http://nodejs.org" target="_blank">Node.js</a> framework for min websize.</p>
+  <p align="center">A frame of <a href="http://nodejs.org" target="_blank">Node.js</a> framework for min website.</p>
     <p align="center">
 <a href="https://www.npmjs.com/~cherryboom" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
 <a href="https://www.npmjs.com/package/krabby-patty" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/core.svg" alt="NPM Downloads" /></a>
