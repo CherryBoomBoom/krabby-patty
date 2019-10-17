@@ -12,6 +12,7 @@ export const MODULE_PATH = Symbol.for('MODULE_PATH')
 export const BASE_DIR = Symbol.for('BASE_DIR')
 export const CONTROLLER_DIR = Symbol.for('CONTROLLER_DIR')
 export const SERVICE_DIR = Symbol.for('SERVICE_DIR')
+export const INGREDIENT = Symbol.for('INGREDIENT')
 export default class LoadFood {
 	public module: any;
 	public app: any;
@@ -38,6 +39,12 @@ export default class LoadFood {
 			this.loadController.bind(this),
 			this.loadModule.bind(this),
 		);
+		if (this.module.ingredients && !!Object.keys(this.module.ingredients)) {
+			this.module[INGREDIENT] = {}
+			for (let i of Object.keys(this.module.ingredients)) {
+				task.push(this.loadPersonalIngredient.bind(Object.assign(this, {INGREDIENT_KEY:i})))
+			}
+		}
 		task.map(i => i());
 	}
 	private loadToModule(exportModule: any, module: any = this.module) {
@@ -95,6 +102,21 @@ export default class LoadFood {
 		if (baseClass !== BaseModule) return void 0;
 		if (!this.ingredients[folderPath]) this.ingredients[folderPath] = {};
 		return { name: moduleName, exportModule };
+	}
+	private loadPersonalIngredient(this: LoadFood & { INGREDIENT_KEY:string}) {
+		let ingredient = {}
+		const folderPath = this.INGREDIENT_KEY;
+		const { directory, filePaths } = this.getFilePaths(folderPath);
+		this.module[INGREDIENT][this.INGREDIENT_KEY] = filePaths
+		for (let filePath of filePaths) {
+			const MODULE = this.loadFile({ directory, filePath, folderPath });
+			if (!MODULE) continue;
+			let { name, exportModule } = MODULE;
+			exportModule = new exportModule(this.module);
+			exportModule = this.loadToModule(exportModule);
+			ingredient[name] = exportModule;
+		}
+		Object.defineProperty(this.module, folderPath, { value: ingredient });
 	}
 	private loadController() {
 		let controller = {};
