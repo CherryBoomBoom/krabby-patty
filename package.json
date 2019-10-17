@@ -18,11 +18,13 @@
         "body-parser": "^1.19.0",
         "crypto": "^1.0.1",
         "express": "4.17.1",
-        "globby": "^10.0.1"
+        "globby": "^10.0.1",
+        "mongoose":"5.7.5"
     },
     "devDependencies": {
         "@types/mocha": "^2.2.40",
         "@types/node": "^7.0.12",
+        "@types/mongoose": "^5.3.23",
         "ts-node": "^6.1.1",
         "tslint": "^5.0.0",
         "typescript": "^3.0.0"
