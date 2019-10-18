@@ -1,4 +1,4 @@
-import {Model, Schema, model, SchemaType} from 'mongoose'
+import { Model, Schema, model, Document,SchemaType} from 'mongoose'
 
 
 let userSchema = {
@@ -10,8 +10,19 @@ let userSchema = {
   email: {type: String, label: '邮箱'},
   // _company: {type: ObjectId, ref: 'Company', label: '主公司'}
 }
-let s:SchemaType = new Schema(userSchema)
-let t = model('s',s)
-const mongooseModel:typeof t = {
-  
+let s = new Schema(userSchema)
+let t:any = model('s', s)
+interface ss {
+	ff:any
 }
+interface userDocument extends Document{
+	mobile:string,
+	password:string,
+	name:string,
+	nickName:string,
+	avatar:string,
+	email:string,
+}
+const mongooseModel: Model<userDocument> & ss = t
+
+mongooseModel.find().then(d =>{d[0].avatar})
