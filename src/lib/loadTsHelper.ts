@@ -2,6 +2,8 @@ import { MODULE_PATH, BASE_DIR, CONTROLLER_DIR, SERVICE_DIR, INGREDIENT } from "
 import * as path from "path";
 import * as fs from "fs";
 import delDir from './delDir'
+import { Schema } from 'mongoose'
+const ObjectId = Schema.Types.ObjectId
 
 export default class LoadTsHelper {
 	private GLOBAL_BASE_DIR = ''
@@ -108,6 +110,7 @@ export default interface IModule {
 
 			let type = model[i].type
 			console.log(type === String);
+			console.log(type === ObjectId);
 		}
 	}
 
