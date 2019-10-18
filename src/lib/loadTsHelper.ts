@@ -25,7 +25,8 @@ export default class LoadTsHelper {
 			if (SERVICE_DIR === i) this.loadModelFile(baseDir, typeBaseDir, Module[i], 'service')
 			if (INGREDIENT === i) {
 				for (let j of Object.keys(Module[i])) {
-					this.loadModelFile(baseDir, typeBaseDir, Module[i][j], j)	
+					if (j === 'model') this.buildMongooseSchemaInterface(baseDir, typeBaseDir, Module[i][j], j)
+					else this.loadModelFile(baseDir, typeBaseDir, Module[i][j], j)	
 				}
 			}
 			if (MODULE_PATH === i) modulePath = Module[i]
@@ -79,6 +80,35 @@ export default interface IModule {
 }
 `;
 		fs.writeFileSync(loadPath, modelFile, 'utf8')
+	}
+
+	private buildMongooseSchemaInterface(
+		baseDir: string,
+		typeBaseDir: string,
+		names: string[],
+		key: string
+	) {
+		let modelFile = ``;
+		let modelFileBody = ``;
+		let itemTypeDir = path.join(typeBaseDir, key)
+		fs.mkdirSync(itemTypeDir)
+		let loadPath = path.join(itemTypeDir, "index.d.ts");
+		for (let i of names) {
+			let extname = path.extname(i)
+			let fileName = i.replace(extname, "");
+			let filePath = path.join(baseDir, key, i);
+			let exportModule = require(filePath).default;
+			let modelInterface = this.getMongooseInterface(exportModule)
+		}
+	}
+
+
+	private getMongooseInterface(model) {
+		for (let i of Object.keys(model)) {
+
+			let type = model[i].type
+			console.log(type === String);
+		}
 	}
 
 	private loadModelFile(
