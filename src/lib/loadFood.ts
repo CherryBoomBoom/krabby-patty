@@ -42,7 +42,8 @@ export default class LoadFood {
 		if (this.module.ingredients && !!Object.keys(this.module.ingredients)) {
 			this.module[INGREDIENT] = {}
 			for (let i of Object.keys(this.module.ingredients)) {
-				task.push(this.loadPersonalIngredient.bind(Object.assign(this, {INGREDIENT_KEY:i})))
+				let {loadDir:LOAD_DIR='',processed:PROCESSED=null,customPrompt=null} = this.module.ingredients[i]
+				task.push(this.loadPersonalIngredient.bind(Object.assign(this, {INGREDIENT_KEY:i,LOAD_DIR,PROCESSED})))
 			}
 		}
 		task.map(i => i());
@@ -103,16 +104,17 @@ export default class LoadFood {
 		if (!this.ingredients[folderPath]) this.ingredients[folderPath] = {};
 		return { name: moduleName, exportModule };
 	}
-	private loadPersonalIngredient(this: LoadFood & { INGREDIENT_KEY:string}) {
+	private loadPersonalIngredient(this: LoadFood & { INGREDIENT_KEY:string,LOAD_DIR:string,PROCESSED:Function}) {
 		let ingredient = {}
-		const folderPath = this.INGREDIENT_KEY;
+		const folderPath = this.LOAD_DIR;
 		const { directory, filePaths } = this.getFilePaths(folderPath);
 		this.module[INGREDIENT][this.INGREDIENT_KEY] = filePaths
 		for (let filePath of filePaths) {
 			const MODULE = this.loadFile({ directory, filePath, folderPath });
 			if (!MODULE) continue;
 			let { name, exportModule } = MODULE;
-			exportModule = new exportModule(this.module);
+			// exportModule = new exportModule(this.module);
+			if(this.PROCESSED)exportModule = PROCESSED
 			exportModule = this.loadToModule(exportModule);
 			ingredient[name] = exportModule;
 		}

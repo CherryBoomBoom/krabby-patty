@@ -2,8 +2,9 @@ import { MODULE_PATH, BASE_DIR, CONTROLLER_DIR, SERVICE_DIR, INGREDIENT } from "
 import * as path from "path";
 import * as fs from "fs";
 import delDir from './delDir'
-import { Schema } from 'mongoose'
+import { Schema,SchemaType, } from 'mongoose'
 const ObjectId = Schema.Types.ObjectId
+const Mixed = Schema.Types.Mixed
 
 export default class LoadTsHelper {
 	private GLOBAL_BASE_DIR = ''
@@ -100,17 +101,21 @@ export default interface IModule {
 			let fileName = i.replace(extname, "");
 			let filePath = path.join(baseDir, key, i);
 			let exportModule = require(filePath).default;
-			let modelInterface = this.getMongooseInterface(exportModule)
-		}
-	}
-
-
-	private getMongooseInterface(model) {
-		for (let i of Object.keys(model)) {
-
-			let type = model[i].type
-			console.log(type === String);
-			console.log(type === ObjectId);
+			let modelFileBody = ``;
+			for (let i of Object.keys(exportModule)) {
+				let type = exportModule[i].type
+				console.log(exportModule[i]);
+				console.log('type' in exportModule[i]);
+				if(type === String)modelFileBody+=`\n${i}: string`
+				if(type === Object)modelFileBody+=`\n${i}: any`
+				if(type === Number)modelFileBody+=`\n${i}: number`
+				if(type === Boolean)modelFileBody+=`\n${i}: boolean`
+				if(type === Array)modelFileBody+=`\n${i}: any[]`
+				if(type === Date)modelFileBody+=`\n${i}: Date`
+				if(type === Buffer)modelFileBody+=`\n${i}: Buffer`
+				if(type === Mixed)modelFileBody+=`\n${i}: any`
+				if(type === ObjectId)modelFileBody+=`\n${i}: typeof ObjectId`
+			}
 		}
 	}
 
