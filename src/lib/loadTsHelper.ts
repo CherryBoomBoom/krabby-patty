@@ -28,8 +28,8 @@ export default class LoadTsHelper {
 			if (SERVICE_DIR === i) this.loadModelFile(baseDir, typeBaseDir, Module[i], 'service')
 			if (INGREDIENT === i) {
 				for (let j of Object.keys(Module[i])) {
-					if (j === 'model') this.buildMongooseSchemaInterface(baseDir, typeBaseDir, Module[i][j], j)
-					else this.loadModelFile(baseDir, typeBaseDir, Module[i][j], j)	
+					let {names=[],customPrompt=()=>{}} = Module[i][j]
+					this.loadModelFile(baseDir, typeBaseDir, names, j,customPrompt)	
 				}
 			}
 			if (MODULE_PATH === i) modulePath = Module[i]
@@ -123,13 +123,22 @@ export default interface IModule {
 		baseDir: string,
 		typeBaseDir: string,
 		names: string[],
-		key: string
+		key: string,
+		customPrompt?:Function
 	) {
-		let modelFile = ``;
-		let modelFileBody = ``;
 		let itemTypeDir = path.join(typeBaseDir, key)
 		fs.mkdirSync(itemTypeDir)
 		let loadPath = path.join(itemTypeDir, "index.d.ts");
+		let modelFile
+		if(customPrompt)modelFile = customPrompt.apply([baseDir,typeBaseDir,names,key])
+		else modelFile = this.createModelInterface(key,baseDir,names,itemTypeDir)
+		fs.writeFileSync(loadPath, modelFile, 'utf8')
+		return modelFile;
+	}
+
+	private createModelInterface(key:string,baseDir:string,names:string[],itemTypeDir:string){
+		let modelFile = ``;
+		let modelFileBody = ``;
 		let interfaceName = key.charAt(0).toUpperCase() + key.slice(1);
 		for (let i of names) {
 			let extname = path.extname(i)
@@ -149,8 +158,7 @@ export default interface IModule {
 			`export default interface I${interfaceName} {
 ${modelFileBody}
 }`;
-		fs.writeFileSync(loadPath, modelFile, 'utf8')
-		return modelFile;
+return modelFile
 	}
 	private loadModuleIndex(typeBaseDir, modulePath) {
 		let loadPath = path.join(typeBaseDir, 'index.d.ts')
