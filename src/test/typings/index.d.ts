@@ -7,6 +7,6 @@ declare module '../base.module' {
 	export default interface BaseModule {
 		service:IService
 		controller:IController
-		Model: IModel
+		model: IModel
 	}
 }

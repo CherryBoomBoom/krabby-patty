@@ -128,7 +128,6 @@ ${modelFileBody}
 		return modelFile
 	}
 	private loadModuleIndex(typeBaseDir: string, modulePath: string, ingredient: { [key: string]: string }) {
-		console.log(ingredient);
 		let loadPath = path.join(typeBaseDir, 'index.d.ts')
 		let extname = path.extname(modulePath)
 		let moduleRelativePath = path.relative(typeBaseDir, modulePath).replace(/\\/g, '/')
@@ -149,7 +148,7 @@ declare module '${moduleRelativePath}' {
 		controller:IController`
 		for (let i of Object.keys(ingredient)) {
 			let exportFileName = i.charAt(0).toUpperCase() + i.slice(1);
-			modelFile += `\n		${exportFileName}: I${exportFileName}`
+			modelFile += `\n		${i}: I${exportFileName}`
 		}
 		modelFile +=`\n	}\n}`
 		fs.writeFileSync(loadPath, modelFile, 'utf8')
