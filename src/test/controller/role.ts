@@ -20,6 +20,6 @@ export default class RoleController extends BaseModule {
   }
 	@Get({ path: '/create', middleware:[testFunction4]})
 	async [Symbol()]() {
-    return await this.service.role.getRole()
+    // return await this.service.role.getRole()
   }
 }

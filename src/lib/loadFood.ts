@@ -35,7 +35,6 @@ export default class LoadFood {
   private loadIngredients() {
     let task: any[] = [];
     task.push(
-      this.loadModel.bind(this),
       this.loadService.bind(this),
       this.loadController.bind(this),
       this.loadModule.bind(this)
@@ -47,7 +46,7 @@ export default class LoadFood {
           loadDir: LOAD_DIR = "",
           processed: PROCESSED = null,
           customPrompt: CUSTOM_PROMPT = null
-        } = this.module.ingredients[i];
+				} = this.module.ingredients[i];
         task.push(
           this.loadPersonalIngredient.bind(
             Object.assign(this, {
@@ -102,7 +101,7 @@ export default class LoadFood {
     this.app.use(baseUrl, Router);
   }
   private loadFile({ directory, filePath, folderPath }) {
-    const fullPath = path.resolve(directory, filePath);
+		const fullPath = path.resolve(directory, filePath);
     if (!fs.statSync(fullPath).isFile()) return void 0;
     cleanCache(fullPath);
     let exportModule = require(fullPath);
@@ -113,7 +112,6 @@ export default class LoadFood {
         "default" in exportModule ? exportModule.default : exportModule;
     }
     let baseClass = Object.getPrototypeOf(Object.getPrototypeOf(exportModule));
-    if (baseClass !== BaseModule) return void 0;
     if (!this.ingredients[folderPath]) this.ingredients[folderPath] = {};
     return { name: moduleName, exportModule };
   }
@@ -124,19 +122,22 @@ export default class LoadFood {
       PROCESSED: Function;
       CUSTOM_PROMPT: Function;
     }
-  ) {
+	) {
     let ingredient = {};
     const folderPath = this.LOAD_DIR;
-    const { directory, filePaths } = this.getFilePaths(folderPath);
-    this.module[INGREDIENT][this.INGREDIENT_KEY] = {
+		const { directory, filePaths } = this.getFilePaths(folderPath);
+		this.module[INGREDIENT][this.INGREDIENT_KEY] = {
+			folderPath,
       names: filePaths,
       customPrompt: this.CUSTOM_PROMPT
-    };
-    for (let filePath of filePaths) {
-      const MODULE = this.loadFile({ directory, filePath, folderPath });
+		};
+		for (let filePath of filePaths) {
+			const MODULE = this.loadFile({ directory, filePath, folderPath });
       if (!MODULE) continue;
-      let { name, exportModule } = MODULE;
-      if (this.PROCESSED) exportModule = this.PROCESSED.apply(exportModule);
+			let { name, exportModule } = MODULE;
+			let extname = path.extname(name)
+			let fileName = name.replace(extname, "");
+			if (this.PROCESSED) exportModule = this.PROCESSED.apply(this.module, [fileName,exportModule]);
       exportModule = this.loadToModule(exportModule);
       ingredient[name] = exportModule;
     }
@@ -173,9 +174,6 @@ export default class LoadFood {
       service[name] = exportModule;
     }
     Object.defineProperty(this.module, folderPath, { value: service });
-  }
-  private loadModel() {
-    const folderPath = "model";
   }
   private loadModule() {
     let modules = this.module.modules || [];
