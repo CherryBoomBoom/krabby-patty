@@ -1,2 +1,3 @@
 import krabbyPatty from "../krabbyPatty";
-krabbyPatty({config:{baseDir:__dirname,port:3001}})
+import config from './config/config.base'
+krabbyPatty(config)

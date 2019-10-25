@@ -21,7 +21,8 @@ export default class LoadFood {
     [key: string]: { [key: string]: any };
   } = {};
 
-  constructor(option) {
+	constructor(option) {
+		console.log(option.config);
     this.baseDir = option.baseDir;
     if (loadedModuleDir.includes(this.baseDir)) return;
     else loadedModuleDir.push(this.baseDir);
@@ -111,7 +112,6 @@ export default class LoadFood {
       exportModule =
         "default" in exportModule ? exportModule.default : exportModule;
     }
-    let baseClass = Object.getPrototypeOf(Object.getPrototypeOf(exportModule));
     if (!this.ingredients[folderPath]) this.ingredients[folderPath] = {};
     return { name: moduleName, exportModule };
   }
@@ -190,7 +190,7 @@ export default class LoadFood {
         baseDir,
         modulePath,
         module: new i(),
-        app: this.app
+				app: this.app,
       });
       if (itemModule.module) loadedModule[key] = itemModule.module;
     }
