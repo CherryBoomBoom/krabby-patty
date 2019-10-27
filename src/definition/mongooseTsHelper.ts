@@ -37,7 +37,7 @@ export default function mongooseTsHelper(baseDir: string,
 export default interface IModel {`
 	for (let i of Object.keys(modelPathToInterface)) {
 		let exportFileName = i.charAt(0).toUpperCase() + i.slice(1);
-		modelFile += `\n	${i.toLowerCase()}: Model<I${exportFileName}Model>`
+		modelFile += `\n	${exportFileName}: Model<I${exportFileName}Model>`
 	}
 	modelFile += `
 }`

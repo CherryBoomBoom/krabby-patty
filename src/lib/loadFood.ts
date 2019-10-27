@@ -5,6 +5,7 @@ import BaseModule from "../interface/Module";
 import express from "express";
 import cleanCache from "../lib/cleanCache";
 import getModulePath from "../lib/getModulePath";
+import mongoose from "mongoose";
 
 const loadedModuleDir = [];
 
@@ -17,12 +18,13 @@ export default class LoadFood {
   public module: any;
   public app: any;
   private baseDir: string;
+  private config:any
   private ingredients: {
     [key: string]: { [key: string]: any };
   } = {};
 
-	constructor(option) {
-		console.log(option.config);
+  constructor(option) {
+    this.config = option.config || {}
     this.baseDir = option.baseDir;
     if (loadedModuleDir.includes(this.baseDir)) return;
     else loadedModuleDir.push(this.baseDir);
@@ -33,8 +35,19 @@ export default class LoadFood {
     this.app = option.app;
     this.loadIngredients();
   }
+  private connectMongo(mongoDB) {
+    mongoose.connect(mongoDB,{ useNewUrlParser: true, useUnifiedTopology: true });
+    mongoose.Promise = global.Promise;
+    const db = mongoose.connection;
+    db.on("error", console.error.bind(console, "MongoDB connection error:"));
+    Object.defineProperty(this.module, 'mongoose', { value: db });
+  }
   private loadIngredients() {
     let task: any[] = [];
+    if(this.config.db){
+      let {mongo=void 0,sql=void 0} = this.config.db
+      if(mongo)this.connectMongo(mongo.uri)
+    }
     task.push(
       this.loadService.bind(this),
       this.loadController.bind(this),
@@ -47,7 +60,7 @@ export default class LoadFood {
           loadDir: LOAD_DIR = "",
           processed: PROCESSED = null,
           customPrompt: CUSTOM_PROMPT = null
-				} = this.module.ingredients[i];
+        } = this.module.ingredients[i];
         task.push(
           this.loadPersonalIngredient.bind(
             Object.assign(this, {
@@ -102,7 +115,7 @@ export default class LoadFood {
     this.app.use(baseUrl, Router);
   }
   private loadFile({ directory, filePath, folderPath }) {
-		const fullPath = path.resolve(directory, filePath);
+    const fullPath = path.resolve(directory, filePath);
     if (!fs.statSync(fullPath).isFile()) return void 0;
     cleanCache(fullPath);
     let exportModule = require(fullPath);
@@ -122,22 +135,26 @@ export default class LoadFood {
       PROCESSED: Function;
       CUSTOM_PROMPT: Function;
     }
-	) {
+  ) {
     let ingredient = {};
     const folderPath = this.LOAD_DIR;
-		const { directory, filePaths } = this.getFilePaths(folderPath);
-		this.module[INGREDIENT][this.INGREDIENT_KEY] = {
-			folderPath,
+    const { directory, filePaths } = this.getFilePaths(folderPath);
+    this.module[INGREDIENT][this.INGREDIENT_KEY] = {
+      folderPath,
       names: filePaths,
       customPrompt: this.CUSTOM_PROMPT
-		};
-		for (let filePath of filePaths) {
-			const MODULE = this.loadFile({ directory, filePath, folderPath });
+    };
+    for (let filePath of filePaths) {
+      const MODULE = this.loadFile({ directory, filePath, folderPath });
       if (!MODULE) continue;
-			let { name, exportModule } = MODULE;
-			let extname = path.extname(name)
-			let fileName = name.replace(extname, "");
-			if (this.PROCESSED) exportModule = this.PROCESSED.apply(this.module, [fileName,exportModule]);
+      let { name, exportModule } = MODULE;
+      let extname = path.extname(name);
+      let fileName = name.replace(extname, "");
+      if (this.PROCESSED)
+        exportModule = this.PROCESSED.apply(this.module, [
+          fileName,
+          exportModule
+        ]);
       exportModule = this.loadToModule(exportModule);
       ingredient[name] = exportModule;
     }
@@ -190,7 +207,7 @@ export default class LoadFood {
         baseDir,
         modulePath,
         module: new i(),
-				app: this.app,
+        app: this.app
       });
       if (itemModule.module) loadedModule[key] = itemModule.module;
     }

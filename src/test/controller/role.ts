@@ -16,7 +16,8 @@ export default class RoleController extends BaseModule {
 	readonly middleware=[testFunction3]
   @Get('/login')
   async [Symbol()]() {
-    return 'hello world';
+    // return await this.model.User.find({});
+    return true
   }
 	@Get({ path: '/create', middleware:[testFunction4]})
 	async [Symbol()]() {
