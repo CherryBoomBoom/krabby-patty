@@ -24,4 +24,4 @@
     npm i
     npm run test
 ## api文档
-<a href="https://cherryboomboom.github.io/">https://cherryboomboom.github.io/</a>
+<a href="https://cherryboomboom.github.io/">蟹黄堡web框架API</a>
