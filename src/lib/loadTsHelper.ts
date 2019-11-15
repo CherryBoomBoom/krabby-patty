@@ -12,7 +12,7 @@ export default class LoadTsHelper {
 		this.GLOBAL_BASE_DIR = this.getBaseDir(Module);
 		this.GLOBAL_TYPINGS_BASE_DIR = path.join(this.GLOBAL_BASE_DIR, 'typings');
 		delDir(this.GLOBAL_TYPINGS_BASE_DIR)
-		fs.mkdirSync(this.GLOBAL_TYPINGS_BASE_DIR)
+		fs.mkdirSync(this.GLOBAL_TYPINGS_BASE_DIR)	
 		this.load(Module, this.GLOBAL_TYPINGS_BASE_DIR);
 	}
 
@@ -50,8 +50,10 @@ export default class LoadTsHelper {
 	}
 
 	private getBaseDir(Module) {
-		for (let i of Object.getOwnPropertySymbols(Module)) {
-			if (BASE_DIR === i) return Module[i];
+		if (Module) {
+			for (let i of Object.getOwnPropertySymbols(Module)) {
+				if (BASE_DIR === i) return Module[i];
+			}	
 		}
 	}
 
