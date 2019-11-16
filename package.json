@@ -6,7 +6,7 @@
     "scripts": {
         "start": "node utils/app.js",
         "dev": "ts-node src/app.ts --dev",
-        "test": "ts-node src/test/app.ts  --dev",
+        "test": "ts-node src/test/app/app.ts  --dev",
         "build": "tsc"
     },
     "bin": {

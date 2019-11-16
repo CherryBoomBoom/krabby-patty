@@ -1,4 +1,4 @@
-import Module from '../../interface/Module'
+import Module from '../../../../interface/Module'
 function testFunction(req,res,next){
   console.log('中间件11');
   next()

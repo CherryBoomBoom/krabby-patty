@@ -1,6 +1,6 @@
-import Router from '../../../decorators/Router'
-import Get from '../../../decorators/Get'
-import Controller from '../../../interface/Controller'
+import Router from '../../../../../decorators/Router'
+import Get from '../../../../../decorators/Get'
+import Controller from '../../../../../interface/Controller'
 import UserModule from '../base.module'
 function testFunction3(req,res,next){
   console.log('中间件3');

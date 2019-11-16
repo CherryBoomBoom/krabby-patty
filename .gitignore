@@ -1,5 +1,5 @@
-node_modules
 utils
+node_modules
 .DS_Store
-src/demo/node_modules
+**/*/node_modules
 **/*/typings
