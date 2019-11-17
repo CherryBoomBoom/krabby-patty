@@ -25,3 +25,13 @@
     npm run test
 ## api文档
 <a href="https://cherryboomboom.github.io/">蟹黄堡web框架API</a>
+
+## 本次更新
+- dev热更新
+- dev模式使用config.dev中的内容
+
+## 待更新
+- 修改controller模式，改成roter+controller+service模式
+- 多进程
+- 微服务的组合和快速解耦
+- 小雷音寺

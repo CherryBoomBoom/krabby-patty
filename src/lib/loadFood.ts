@@ -1,11 +1,9 @@
 import * as path from 'path'
 import * as fs from 'fs'
 import globby = require('globby')
-import BaseModule from '../interface/Module'
 import express from 'express'
 import cleanCache from '../helper/cleanCache'
 import getModulePath from '../helper/getModulePath'
-import mongoose from 'mongoose'
 
 const loadedModuleDir = []
 const START_PATH = path.dirname(require.main.filename)
@@ -67,6 +65,7 @@ export default class LoadFood {
     task.map(i => i())
   }
   private loadToModule(exportModule: any, module: any = this.module) {
+    if (!exportModule) return
     exportModule = new Proxy(exportModule, {
       get: (target, property) => {
         if (target[property]) return target[property]
@@ -142,6 +141,7 @@ export default class LoadFood {
       let fileName = name.replace(extname, '')
       if (this.PROCESSED) exportModule = this.PROCESSED.apply(this.module, [fileName, exportModule])
       exportModule = this.loadToModule(exportModule)
+      if (!exportModule) continue
       ingredient[name] = exportModule
     }
     Object.defineProperty(this.module, folderPath, { value: ingredient })
@@ -198,5 +198,9 @@ export default class LoadFood {
       if (itemModule.module) loadedModule[key] = itemModule.module
     }
     if (!!Object.keys(loadedModule)) this.module.module = loadedModule
+  }
+  getApp() {
+    this.app.module = this.module
+    return this.app
   }
 }
