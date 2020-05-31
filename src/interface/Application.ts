@@ -1,11 +1,15 @@
+import krabbyPatty from 'src/krabbyPatty'
+
 export default class Application {
-  protected app: {
+  public app: {
     module: any
     router: { [key: string]: { method: 'POST' | 'GET'; callback: Function; functionName: string } }
     baseUrl: string
-  }
-  protected path: string
-  constructor(app) {
-    this.app = app
+	}
+	public readonly middleware = []
+  public path: string
+  public config: {}
+  constructor() {
+		krabbyPatty(this)
   }
 }

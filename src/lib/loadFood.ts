@@ -13,34 +13,26 @@ export const BASE_DIR = Symbol.for('BASE_DIR')
 export const CONTROLLER_DIR = Symbol.for('CONTROLLER_DIR')
 export const SERVICE_DIR = Symbol.for('SERVICE_DIR')
 export const INGREDIENT = Symbol.for('INGREDIENT')
+
 export default class LoadFood {
   public module: any
   public app: any
   private ingredients: { [key: string]: any } = {}
 
   constructor(option) {
-    let { baseDir = START_PATH, app, module } = option
+		let { baseDir = START_PATH, app, Module } = option
+		
     if (loadedModuleDir.includes(baseDir)) return
-    else loadedModuleDir.push(baseDir)
-    module[BASE_DIR] = baseDir
-    module[MODULE_PATH] = path.join(baseDir, 'base.module.ts')
+		else loadedModuleDir.push(baseDir)
+		
+    Module[BASE_DIR] = baseDir
     this.app = app
-    this.module = module
+    this.module = Module
     this.loadIngredients()
   }
-  // private connectMongo(mongoDB) {
-  //   mongoose.connect(mongoDB,{ useNewUrlParser: true, useUnifiedTopology: true });
-  //   mongoose.Promise = global.Promise;
-  //   const db = mongoose.connection;
-  //   db.on("error", console.error.bind(console, "MongoDB connection error:"));
-  //   Object.defineProperty(this.module, 'mongoose', { value: db });
-  // }
   private loadIngredients() {
     let task: any[] = []
-    // if(this.config.db){
-    //   let {mongo=void 0,sql=void 0} = this.config.db
-    //   if(mongo)this.connectMongo(mongo.uri)
-    // }
+
     task.push(this.loadService.bind(this), this.loadController.bind(this), this.loadModule.bind(this))
     if (this.module.ingredients && !!Object.keys(this.module.ingredients)) {
       this.module[INGREDIENT] = {}
@@ -81,7 +73,7 @@ export default class LoadFood {
       filePaths: globby.sync(['**/*.ts', '**/*.js'], { cwd: directory })
     }
   }
-  private async asyncCallback(callback, req) {
+  private async asyncCallback(callback, req,res) {
     let ctx = Object.create(this.module)
     ctx.body = req.body
     ctx.query = req.query
@@ -89,7 +81,7 @@ export default class LoadFood {
     ctx.method = req.method
     ctx.headers = req.headers
     let itemPrototype = Object.assign(this.module, { query: req.query })
-    return await callback.bind(itemPrototype).apply()
+	  return await callback.apply(itemPrototype,[req,res])
   }
   private loadRouter(param: any, baseUrl: string, middleware: Function[]) {
     let Router = express.Router()
@@ -99,7 +91,7 @@ export default class LoadFood {
       if (!!middleware.length) for (let i of middleware) Router.use(path, i)
       const router = Router.route(path)
       router[method.toLowerCase()](async (req, res) => {
-        res.send(await this.asyncCallback(callback, req))
+        res.send(await this.asyncCallback(callback, req,res))
       })
     }
     this.app.use(baseUrl, Router)

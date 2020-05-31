@@ -3,10 +3,9 @@ import mongoose from 'mongoose'
 export default class LoadConfig {
   public readonly module
 
-  constructor(module, config) {
-    module.config = config
+  constructor(module) {
     this.module = module
-    if (config.db) this.connectDatabase(config.db)
+    if (module.config.db) this.connectDatabase(module.config.db)
   }
 
   private connectDatabase(db) {

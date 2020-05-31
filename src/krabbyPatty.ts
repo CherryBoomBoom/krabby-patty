@@ -4,25 +4,28 @@ import loadConfig from './lib/loadConfig'
 import loadTsHelper from './lib/loadTsHelper'
 import getExpress from './lib/getExpress'
 import createWorker from './lib/createWorker'
+import Application from './interface/Application'
 
 const START_PATH = path.dirname(require.main.filename)
-const BASE_CONFIG_PATH = path.join(START_PATH, './config/config.base')
-const DEV_CONFIG_PATH = path.join(START_PATH, './config/config.dev')
-const BASE_MODULE_PATH = path.join(START_PATH, './base.module')
+const DEFAULT_CONFIG = require('../config/config.base').default
+const BASE_CONFIG = require(path.join(START_PATH, './config/config.base')).default
+const PROD_CONFIG = require(path.join(START_PATH, './config/config.prod')).default
+const DEV_CONFIG = require(path.join(START_PATH, './config/config.dev')).default
 const SUCCESS_LOG = `\n🍔  Server run at \x1B[1;32mhttp://localhost:`
 
-export default function krabbyPatty(): void {
-  let dev = process.argv.includes('--dev')
-  if (!createWorker()) return
-  let config = require(BASE_CONFIG_PATH).default
-  let devConfig = require(DEV_CONFIG_PATH).default
-  if(dev)config = Object.assign(config,devConfig)
-  const Module = require(BASE_MODULE_PATH).default
-  const port = config.port || 3000
-  let app = getExpress(Module)
-  let module = new loadConfig(new Module(),config).module
-  app = new loadFood({ config, app, module }).getApp()
+export default function krabbyPatty(Module:Application): void {
+  const IS_DEV = process.argv.includes('--dev')
+	const CONFIG = Object.assign(BASE_CONFIG, IS_DEV ? DEV_CONFIG : PROD_CONFIG, DEFAULT_CONFIG)
+
+	Module.config = CONFIG
+
+	if (IS_DEV && CONFIG.hotDeploy && !createWorker()) return
+
+  let app = getExpress(Module.middleware)
+	Module = new loadConfig(Module).module
+	
+  app = new loadFood({ Module, app }).getApp()
   app = require('http').createServer(app)
-  app.listen(port, () => console.log(`${SUCCESS_LOG}${port}\x1B[0m`))
+  app.listen(CONFIG.port, () => console.info(`${SUCCESS_LOG}${CONFIG.port}\x1B[0m`))
   new loadTsHelper(module)
 }
