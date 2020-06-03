@@ -1,4 +1,4 @@
-import krabbyPatty from 'src/krabbyPatty'
+import krabbyPatty from '../krabbyPatty'
 
 export default class Application {
   public app: {

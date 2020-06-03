@@ -12,6 +12,7 @@ export default class LoadTsHelper {
   constructor(Module) {
     this.Module = Module
     this.GLOBAL_BASE_DIR = Module[BASE_DIR]
+    console.log(this.GLOBAL_BASE_DIR);
     this.TYPINGS_DIR = path.join(this.GLOBAL_BASE_DIR, '../typings')
     delDir(this.TYPINGS_DIR)
     mkdir(this.TYPINGS_DIR)

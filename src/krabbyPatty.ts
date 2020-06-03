@@ -7,15 +7,14 @@ import createWorker from './lib/createWorker'
 import Application from './interface/Application'
 
 const START_PATH = path.dirname(require.main.filename)
-const DEFAULT_CONFIG = require('../config/config.base').default
-const BASE_CONFIG = require(path.join(START_PATH, './config/config.base')).default
-const PROD_CONFIG = require(path.join(START_PATH, './config/config.prod')).default
-const DEV_CONFIG = require(path.join(START_PATH, './config/config.dev')).default
+const BASE_CONFIG = require(path.join(START_PATH, 'config/config.base')).default
+const PROD_CONFIG = require(path.join(START_PATH, 'config/config.prod')).default
+const DEV_CONFIG = require(path.join(START_PATH, 'config/config.dev')).default
 const SUCCESS_LOG = `\n🍔  Server run at \x1B[1;32mhttp://localhost:`
 
 export default function krabbyPatty(Module:Application): void {
   const IS_DEV = process.argv.includes('--dev')
-	const CONFIG = Object.assign(BASE_CONFIG, IS_DEV ? DEV_CONFIG : PROD_CONFIG, DEFAULT_CONFIG)
+	const CONFIG = Object.assign(BASE_CONFIG, IS_DEV ? DEV_CONFIG : PROD_CONFIG)
 
 	Module.config = CONFIG
 

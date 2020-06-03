@@ -1,2 +1,6 @@
 import krabbyPatty from "../../krabbyPatty";
-krabbyPatty()
+import Application from "../../interface/Application";
+class app extends Application{
+
+}
+new app()
