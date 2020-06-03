@@ -29,9 +29,9 @@ export default function loadFood(option) {
 function loadIngredients() {
   let task: any[] = []
 
-  task.push(this.loadService.bind(this), this.loadController.bind(this))
+  task.push(loadService.bind(this), loadController.bind(this))
   // 不向下加载子模块
-  task.push(this.loadModule.bind(this))
+  task.push(loadModule.bind(this))
   // 加载自定义食材到application
   if (this.module.ingredients && !!Object.keys(this.module.ingredients)) {
     this.module[INGREDIENT] = {}
@@ -108,14 +108,7 @@ function loadFile({ directory, filePath, folderPath }) {
   if (!this.ingredients[folderPath]) this.ingredients[folderPath] = {}
   return { name: moduleName, exportModule }
 }
-function loadPersonalIngredient(
-  this: loadFood & {
-    INGREDIENT_KEY: string
-    LOAD_DIR: string
-    PROCESSED: Function
-    CUSTOM_PROMPT: Function
-  }
-) {
+function loadPersonalIngredient() {
   let ingredient = {}
   const folderPath = this.LOAD_DIR
   const { directory, filePaths } = this.getFilePaths(folderPath)
@@ -160,7 +153,7 @@ function loadService() {
   const { directory, filePaths } = this.getFilePaths(folderPath)
   this.module[SERVICE_DIR] = filePaths
   for (let filePath of filePaths) {
-    const MODULE = this.loadFile({ directory, filePath, folderPath })
+    const MODULE = loadFile({ directory, filePath, folderPath })
     if (!MODULE) continue
     let { name, exportModule } = MODULE
     exportModule = new exportModule(this.module)
