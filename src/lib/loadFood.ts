@@ -23,7 +23,7 @@ export default function loadFood(option) {
   Module[BASE_DIR] = baseDir
   this.app = app
   this.module = Module
-  this.loadIngredients()
+  loadIngredients()
 }
 
 function loadIngredients() {
@@ -147,20 +147,21 @@ function loadController() {
   }
   Object.defineProperty(this.module, folderPath, { value: controller })
 }
-function loadService() {
+function loadService(module) {
   let service = {}
   const folderPath = 'service'
-  const { directory, filePaths } = this.getFilePaths(folderPath)
-  this.module[SERVICE_DIR] = filePaths
+  const { directory, filePaths } = getFilePaths(folderPath)
+  module[SERVICE_DIR] = filePaths
   for (let filePath of filePaths) {
     const MODULE = loadFile({ directory, filePath, folderPath })
     if (!MODULE) continue
     let { name, exportModule } = MODULE
     exportModule = new exportModule(this.module)
-    exportModule = this.loadToModule(exportModule)
+    exportModule = loadToModule(exportModule)
     service[name] = exportModule
   }
-  Object.defineProperty(this.module, folderPath, { value: service })
+  Object.defineProperty(module, folderPath, { value: service })
+  return modulef
 }
 function loadModule() {
   let modules = this.module.modules || []
