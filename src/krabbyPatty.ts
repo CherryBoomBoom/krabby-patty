@@ -21,10 +21,11 @@ export default function krabbyPatty(Module:Application): void {
 	if (IS_DEV && CONFIG.hotDeploy && !createWorker()) return
 
   let app = getExpress(Module.middleware)
-	Module = new loadConfig(Module).module
-	
-  app = new loadFood({ Module, app }).getApp()
-  app = require('http').createServer(app)
-  app.listen(CONFIG.port, () => console.info(`${SUCCESS_LOG}${CONFIG.port}\x1B[0m`))
-  new loadTsHelper(module)
+  let MODULE = new loadConfig(Module).module
+  MODULE.app = app
+
+  MODULE = loadFood(MODULE)
+  MODULE.app = require('http').createServer(MODULE.app)
+  MODULE.app.listen(CONFIG.port, () => console.info(`${SUCCESS_LOG}${CONFIG.port}\x1B[0m`))
+  new loadTsHelper(MODULE)
 }

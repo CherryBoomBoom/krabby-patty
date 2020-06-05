@@ -12,7 +12,6 @@ export default class LoadTsHelper {
   constructor(Module) {
     this.Module = Module
     this.GLOBAL_BASE_DIR = Module[BASE_DIR]
-    console.log(this.GLOBAL_BASE_DIR);
     this.TYPINGS_DIR = path.join(this.GLOBAL_BASE_DIR, '../typings')
     delDir(this.TYPINGS_DIR)
     mkdir(this.TYPINGS_DIR)
@@ -38,14 +37,14 @@ export default class LoadTsHelper {
       if (MODULE_PATH === i) modulePath = Module[i]
     }
     let moduleNameArray = []
-    if (!!Object.keys(Module.module).length) {
-      for (let i of Object.keys(Module.module)) {
-        let subTypeDir = path.join(typeDir, 'module', i)
-        mkdir(subTypeDir)
-        let itemModuleName = this.load(Module.module[i], subTypeDir, i)
-        moduleNameArray.push({ path: itemModuleName, key: i })
-      }
-    }
+    // if (!!Object.keys(Module.module).length) {
+    //   for (let i of Object.keys(Module.module)) {
+    //     let subTypeDir = path.join(typeDir, 'module', i)
+    //     mkdir(subTypeDir)
+    //     let itemModuleName = this.load(Module.module[i], subTypeDir, i)
+    //     moduleNameArray.push({ path: itemModuleName, key: i })
+    //   }
+    // }
     this.loadModuleFile(moduleNameArray, typeDir)
     this.loadModuleIndex(typeDir, modulePath, ingredient)
     return modulePath

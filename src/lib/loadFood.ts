@@ -1,4 +1,5 @@
 import * as path from 'path'
+import app = require("./../demo/app")
 import * as fs from 'fs'
 import globby = require('globby')
 import express from 'express'
@@ -14,75 +15,63 @@ export const CONTROLLER_DIR = Symbol.for('CONTROLLER_DIR')
 export const SERVICE_DIR = Symbol.for('SERVICE_DIR')
 export const INGREDIENT = Symbol.for('INGREDIENT')
 
-export default function loadFood(option) {
-  let { baseDir = START_PATH, app, Module } = option
+export default function loadFood(MODULE) {
 		
-  if (loadedModuleDir.includes(baseDir)) return
-  else loadedModuleDir.push(baseDir)
-  
-  Module[BASE_DIR] = baseDir
-  this.app = app
-  this.module = Module
-  loadIngredients()
+  if (loadedModuleDir.includes(START_PATH)) return
+  else loadedModuleDir.push(START_PATH)
+  MODULE[BASE_DIR] = START_PATH
+  MODULE = loadIngredients(MODULE)
+  return MODULE
 }
 
-function loadIngredients() {
-  let task: any[] = []
-
-  task.push(loadService.bind(this), loadController.bind(this))
+function loadIngredients(MODULE) {
+  MODULE = loadService(MODULE)
+  MODULE = loadController(MODULE)
   // 不向下加载子模块
-  task.push(loadModule.bind(this))
+  // task.push(()=>loadModule(MODULE))
   // 加载自定义食材到application
-  if (this.module.ingredients && !!Object.keys(this.module.ingredients)) {
-    this.module[INGREDIENT] = {}
-    for (let i of Object.keys(this.module.ingredients)) {
+  if (MODULE.ingredients && !!Object.keys(MODULE.ingredients)) {
+    MODULE[INGREDIENT] = {}
+    for (let i of Object.keys(MODULE.ingredients)) {
       let {
         loadDir: LOAD_DIR = '',
         processed: PROCESSED = null,
         customPrompt: CUSTOM_PROMPT = null
-      } = this.module.ingredients[i]
-      task.push(
-        this.loadPersonalIngredient.bind(
-          Object.assign(this, {
-            INGREDIENT_KEY: i,
-            LOAD_DIR,
-            PROCESSED,
-            CUSTOM_PROMPT
-          })
-        )
-      )
+      } = MODULE.ingredients[i]
+      MODULE = loadPersonalIngredient(MODULE,PROCESSED,CUSTOM_PROMPT,LOAD_DIR)
     }
   }
-  task.map(i => i())
+
+  return MODULE
 }
-function loadToModule(exportModule: any, module: any = this.module) {
+function loadToModule(exportModule: any, MODULE: any) {
   if (!exportModule) return
   exportModule = new Proxy(exportModule, {
     get: (target, property) => {
       if (target[property]) return target[property]
-      else return module[property]
+      else return MODULE[property]
     }
   })
   return exportModule
 }
-function getFilePaths(folderPath: string) {
-  let directory = path.resolve(this.module[BASE_DIR], folderPath)
+function getFilePaths(folderPath: string,MODULE:any) {
+  let directory = path.resolve(MODULE[BASE_DIR], folderPath)
   return {
     directory,
     filePaths: globby.sync(['**/*.ts', '**/*.js'], { cwd: directory })
   }
 }
-async function asyncCallback(callback, req,res) {
-  let ctx = Object.create(this.module)
+async function asyncCallback(MODULE,callback, req,res) {
+  let ctx = Object.create(MODULE)
   ctx.body = req.body
   ctx.query = req.query
   ctx.url = req.url
   ctx.method = req.method
   ctx.headers = req.headers
-  let itemPrototype = Object.assign(this.module, { query: req.query })
+  let itemPrototype = Object.assign(MODULE, { query: req.query })
   return await callback.apply(itemPrototype,[req,res])
 }
-function loadRouter(param: any, baseUrl: string, middleware: Function[]) {
+function loadRouter(MODULE:any,param: any, baseUrl: string, middleware: Function[]) {
   let Router = express.Router()
   for (let i of middleware) Router.use(i)
   for (let path of Object.keys(param)) {
@@ -90,10 +79,10 @@ function loadRouter(param: any, baseUrl: string, middleware: Function[]) {
     if (!!middleware.length) for (let i of middleware) Router.use(path, i)
     const router = Router.route(path)
     router[method.toLowerCase()](async (req, res) => {
-      res.send(await this.asyncCallback(callback, req,res))
+      res.send(await asyncCallback(MODULE,callback, req,res))
     })
   }
-  this.app.use(baseUrl, Router)
+  MODULE.app.use(baseUrl, Router)
 }
 function loadFile({ directory, filePath, folderPath }) {
   const fullPath = path.resolve(directory, filePath)
@@ -105,66 +94,68 @@ function loadFile({ directory, filePath, folderPath }) {
   if (exportModule.__esModule) {
     exportModule = 'default' in exportModule ? exportModule.default : exportModule
   }
-  if (!this.ingredients[folderPath]) this.ingredients[folderPath] = {}
+  // if (!ingredients[folderPath]) ingredients[folderPath] = {}
   return { name: moduleName, exportModule }
 }
-function loadPersonalIngredient() {
+function loadPersonalIngredient(MODULE,PROCESSED,CUSTOM_PROMPT,LOAD_DIR) {
   let ingredient = {}
-  const folderPath = this.LOAD_DIR
-  const { directory, filePaths } = this.getFilePaths(folderPath)
-  this.module[INGREDIENT][this.INGREDIENT_KEY] = {
-    folderPath,
-    names: filePaths,
-    customPrompt: this.CUSTOM_PROMPT
-  }
+  const folderPath = LOAD_DIR
+  const { directory, filePaths } = getFilePaths(folderPath,MODULE)
+  // MODULE[INGREDIENT][INGREDIENT_KEY] = {
+  //   folderPath,
+  //   names: filePaths,
+  //   customPrompt: CUSTOM_PROMPT
+  // }
   for (let filePath of filePaths) {
-    const MODULE = this.loadFile({ directory, filePath, folderPath })
-    if (!MODULE) continue
-    let { name, exportModule } = MODULE
+    const E_MODEL = loadFile({ directory, filePath, folderPath })
+    if (!E_MODEL) continue
+    let { name, exportModule } = E_MODEL
     let extname = path.extname(name)
     let fileName = name.replace(extname, '')
-    if (this.PROCESSED) exportModule = this.PROCESSED.apply(this.module, [fileName, exportModule])
-    exportModule = this.loadToModule(exportModule)
+    if (PROCESSED) exportModule = PROCESSED.apply(MODULE, [fileName, exportModule])
+    exportModule = loadToModule(exportModule,MODULE)
     if (!exportModule) continue
     ingredient[name] = exportModule
   }
-  Object.defineProperty(this.module, folderPath, { value: ingredient })
+  Object.defineProperty(MODULE, folderPath, { value: ingredient })
+  return MODULE
 }
-function loadController() {
+function loadController(MODULE) {
   let controller = {}
   const folderPath = 'controller'
-  const { directory, filePaths } = this.getFilePaths(folderPath)
-  this.module[CONTROLLER_DIR] = filePaths
+  const { directory, filePaths } = getFilePaths(folderPath,MODULE)
+  MODULE[CONTROLLER_DIR] = filePaths
   for (let filePath of filePaths) {
-    const MODULE = this.loadFile({ directory, filePath, folderPath })
-    if (!MODULE) continue
-    let { name, exportModule } = MODULE
-    exportModule = new exportModule(this.module)
+    const E_MODEL = loadFile({ directory, filePath, folderPath })
+    if (!E_MODEL) continue
+    let { name, exportModule } = E_MODEL
+    exportModule = new exportModule()
     let { router, baseUrl, middleware } = exportModule
-    this.loadRouter(router, baseUrl, middleware)
-    exportModule = this.loadToModule(exportModule)
+    loadRouter(MODULE,router, baseUrl, middleware)
+    exportModule = loadToModule(exportModule,MODULE)
     controller[name] = exportModule
   }
-  Object.defineProperty(this.module, folderPath, { value: controller })
+  Object.defineProperty(MODULE, folderPath, { value: controller })
+  return MODULE
 }
-function loadService(module) {
+function loadService(MODULE) {
   let service = {}
   const folderPath = 'service'
-  const { directory, filePaths } = getFilePaths(folderPath)
-  module[SERVICE_DIR] = filePaths
+  const { directory, filePaths } = getFilePaths(folderPath,MODULE)
+  MODULE[SERVICE_DIR] = filePaths
   for (let filePath of filePaths) {
-    const MODULE = loadFile({ directory, filePath, folderPath })
-    if (!MODULE) continue
-    let { name, exportModule } = MODULE
-    exportModule = new exportModule(this.module)
-    exportModule = loadToModule(exportModule)
+    const E_MODEL = loadFile({ directory, filePath, folderPath })
+    if (!E_MODEL) continue
+    let { name, exportModule } = E_MODEL
+    exportModule = new exportModule()
+    exportModule = loadToModule(exportModule,MODULE)
     service[name] = exportModule
   }
-  Object.defineProperty(module, folderPath, { value: service })
-  return modulef
+  Object.defineProperty(MODULE, folderPath, { value: service })
+  return MODULE
 }
-function loadModule() {
-  let modules = this.module.modules || []
+function loadModule(MODULE) {
+  let modules = MODULE.modules || []
   let loadedModule = {}
   for (let i of modules) {
     let modulePath = getModulePath(i)
@@ -173,14 +164,15 @@ function loadModule() {
     let key = path
       .basename(modulePath)
       .replace(ext, '')
-      .replace('.module', '')
-    let itemModule = new loadFood({
+      .replace('.MODULE', '')
+    let itemModule = loadFood({
       baseDir,
       modulePath,
-      module: new i(),
-      app: this.app
+      MODULE: new i(),
+      app: MODULE.app
     })
-    if (itemModule.module) loadedModule[key] = itemModule.module
+    if (itemModule.MODULE) loadedModule[key] = itemModule.MODULE
   }
-  if (!!Object.keys(loadedModule)) this.module.module = loadedModule
+  if (!!Object.keys(loadedModule)) MODULE.MODULE = loadedModule
+  return MODULE
 }

@@ -12,7 +12,7 @@ function testFunction4(req,res,next){
   console.log('中间件4s')
 }
 @Router('/user')
-export default class RoleController extends BaseModule {
+export default class RoleController {
 	readonly middleware=[testFunction3]
   @Get('/login')
   async [Symbol()]() {
