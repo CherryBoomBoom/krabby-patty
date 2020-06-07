@@ -10,6 +10,9 @@ import KrabbyPatty from '../interface/KrabbyPatty'
 export const INGREDIENT = Symbol.for('INGREDIENT')
 export const SERVICE_DIR = Symbol.for('SERVICE_DIR')
 export const CONTROLLER_DIR = Symbol.for('CONTROLLER_DIR')
+export const CONTROLLER = Symbol.for('CONTROLLER')
+export const SERVICE = Symbol.for('SERVICE')
+export const FOOD_TYPE = Symbol.for('FOOD_TYPE')
 
 export default class LoadFood {
 	public app: KrabbyPatty
@@ -23,7 +26,9 @@ export default class LoadFood {
   private load() {
     this.loadService()
     this.loadController()
-    this.loadIngredients()
+		this.loadIngredients()
+		
+
   }
 
   private loadIngredients() {
@@ -105,7 +110,7 @@ export default class LoadFood {
       if (!!middleware.length) for (let i of middleware) Router.use(path, i)
       const router = Router.route(path)
       router[method.toLowerCase()](async (req, res) => {
-        res.send(await this.asyncCallback(callback, req))
+        res.json(await this.asyncCallback(callback, req))
       })
     }
     this.app.exp.use(baseUrl, Router)
@@ -140,7 +145,6 @@ export default class LoadFood {
     if (exportModule.__esModule) {
       exportModule = 'default' in exportModule ? exportModule.default : exportModule
     }
-    // if (!this.ingredients[folderPath]) this.ingredients[folderPath] = {}
     return { name: moduleName, exportModule }
   }
 
@@ -153,5 +157,10 @@ export default class LoadFood {
       }
     })
     return exportModule
-  }
+	}
+	
+	private getModuleInfo(data = {service:[],controller:[]}){
+		let filePaths = globby.sync(['**/*.ts', '**/*.js'], { cwd: this.app.baseDir })
+
+	}
 }
