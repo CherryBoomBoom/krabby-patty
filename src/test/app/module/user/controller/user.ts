@@ -1,4 +1,4 @@
-import Router from '../../../../../decorators/Router'
+import Router from '../../../../../decorators/Controller'
 import Get from '../../../../../decorators/Get'
 import Controller from '../../../../../interface/Controller'
 import UserModule from '../base.module'

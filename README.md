@@ -9,12 +9,17 @@
 <a href="https://www.npmjs.com/package/krabby-patty" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/core.svg" alt="NPM Downloads" /></a>
 </p>
 
+## 前言
+`我重新思考了一个有用的nodejs后端框架应该是怎么样的，在这段时间重新整理了思路决定推翻重写`
 ## 设计理念
 
-- 有标准入口，可指定工作目录
-- 模块内快速引用，所有需要的属性加载在 this 上
-- 嵌套模块，嵌套中间件
-- 以标准目录树作为装载依据
+- 快速上手
+- 快速开发
+- 极易迭代和拔插
+- 不对目录树做限制
+- 高可用
+- 引入微服务概念
+- 预设客服端，注册中心(网关)，消息通道，用户(权限)模块，后台管理界面。五大板块
 
 ## 快速开始
 ### 脚手架

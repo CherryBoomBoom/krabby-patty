@@ -1,11 +1,12 @@
 import mongoose from 'mongoose'
+import KrabbyPatty from '../interface/KrabbyPatty';
 
 export default class LoadConfig {
-  public readonly module
+  public app:KrabbyPatty
 
-  constructor(module) {
-    this.module = module
-    if (module.config.db) this.connectDatabase(module.config.db)
+  constructor(app:KrabbyPatty) {
+    this.app = app
+    if (app.config.db) this.connectDatabase(app.config.db)
   }
 
   private connectDatabase(db) {
@@ -17,6 +18,6 @@ export default class LoadConfig {
     mongoose.Promise = global.Promise
     const db = mongoose.connection
     db.on('error', console.error.bind(console, 'MongoDB connection error:'))
-    Object.defineProperty(this.module, 'mongo', { value: db })
+    Object.defineProperty(this.app, 'mongo', { value: db })
   }
 }

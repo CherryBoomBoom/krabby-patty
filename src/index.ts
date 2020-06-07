@@ -1,6 +1,6 @@
 import krabbyPattyType from './krabbyPatty'
 import ModuleType from './interface/Module'
-import RouterType from './decorators/Router'
+import RouterType from './decorators/Controller'
 import PostType from './decorators/Post'
 import GetType from './decorators/Get'
 

@@ -1,56 +1,44 @@
-import { MODULE_PATH, BASE_DIR, CONTROLLER_DIR, SERVICE_DIR, INGREDIENT } from './loadFood'
+import { CONTROLLER_DIR, SERVICE_DIR, INGREDIENT } from './loadFood'
 import * as path from 'path'
 import * as fs from 'fs'
 import delDir from '../helper/delDir'
 import mkdir from '../helper/mkdir'
+import KrabbyPatty from '../interface/KrabbyPatty'
 
 export default class LoadTsHelper {
-  private GLOBAL_BASE_DIR = ''
-  private TYPINGS_DIR = ''
-  private Module: any
+  private TYPINGS_DIR:string = ''
+  private app: KrabbyPatty
 
-  constructor(Module) {
-    this.Module = Module
-    this.GLOBAL_BASE_DIR = Module[BASE_DIR]
-    this.TYPINGS_DIR = path.join(this.GLOBAL_BASE_DIR, '../typings')
+  constructor(app: KrabbyPatty) {
+    this.app = app
+    this.TYPINGS_DIR = path.join(this.app.baseDir, '../typings')
     delDir(this.TYPINGS_DIR)
     mkdir(this.TYPINGS_DIR)
-    this.load(Module, this.TYPINGS_DIR)
+    this.load(this.TYPINGS_DIR)
   }
 
-  private load(Module, typeDir, key = '') {
+  private load(typeDir: string, key: string = ''): void {
     let itemTypeDir = path.join(typeDir, !key ? 'module' : '', key)
     if (!key) mkdir(itemTypeDir)
-    let baseDir = Module[BASE_DIR]
-    let modulePath = ''
+    let baseDir = this.app.baseDir
     let ingredient = {}
-    for (let i of Object.getOwnPropertySymbols(Module)) {
-      if (CONTROLLER_DIR === i) this.loadModelFile(baseDir, typeDir, Module[i], 'controller')
-      if (SERVICE_DIR === i) this.loadModelFile(baseDir, typeDir, Module[i], 'service')
+    for (let i of Object.getOwnPropertySymbols(this.app)) {
+      if (CONTROLLER_DIR === i) this.loadModelFile(baseDir, typeDir, this.app[i], 'controller')
+      if (SERVICE_DIR === i) this.loadModelFile(baseDir, typeDir, this.app[i], 'service')
       if (INGREDIENT === i) {
-        for (let j of Object.keys(Module[i])) {
-          let { names = [], folderPath = '', customPrompt = () => {} } = Module[i][j]
+        for (let j of Object.keys(this.app[i])) {
+          let { names = [], folderPath = '', customPrompt = () => {} } = this.app[i][j]
           this.loadModelFile(baseDir, typeDir, names, j, customPrompt)
           ingredient[j] = folderPath
         }
       }
-      if (MODULE_PATH === i) modulePath = Module[i]
     }
     let moduleNameArray = []
-    // if (!!Object.keys(Module.module).length) {
-    //   for (let i of Object.keys(Module.module)) {
-    //     let subTypeDir = path.join(typeDir, 'module', i)
-    //     mkdir(subTypeDir)
-    //     let itemModuleName = this.load(Module.module[i], subTypeDir, i)
-    //     moduleNameArray.push({ path: itemModuleName, key: i })
-    //   }
-    // }
     this.loadModuleFile(moduleNameArray, typeDir)
-    this.loadModuleIndex(typeDir, modulePath, ingredient)
-    return modulePath
+    this.loadModuleIndex(typeDir, this.app.baseFile, ingredient)
   }
 
-  private loadModuleFile(baseDir: Array<{ key: string; path: string }>, typeBaseDir: string) {
+  private loadModuleFile(baseDir: Array<{ key: string; path: string }>, typeBaseDir: string): void {
     let modelFile = ``
     let modelFileBody = ``
     let itemTypeDir = path.join(typeBaseDir, 'module')
@@ -74,12 +62,18 @@ export default interface IModule {
     fs.writeFileSync(loadPath, modelFile, 'utf8')
   }
 
-  private loadModelFile(baseDir: string, typeBaseDir: string, names: string[], key: string, customPrompt?: Function) {
+  private loadModelFile(
+    baseDir: string,
+    typeBaseDir: string,
+    names: string[],
+    key: string,
+    customPrompt?: Function
+  ): void {
     let itemTypeDir = path.join(typeBaseDir, key)
     mkdir(itemTypeDir)
     let loadPath = path.join(itemTypeDir, 'index.d.ts')
     let modelFile
-    if (customPrompt) modelFile = customPrompt.apply(this.Module, [baseDir, names, key])
+    if (customPrompt) modelFile = customPrompt.apply(this.app, [baseDir, names, key])
     else modelFile = this.createModelInterface(key, baseDir, names, itemTypeDir)
     fs.writeFileSync(loadPath, modelFile, 'utf8')
     return modelFile
