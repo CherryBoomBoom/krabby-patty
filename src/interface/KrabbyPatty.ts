@@ -41,7 +41,7 @@ export default class KrabbyPatty {
     this.config = CONFIG
 
     if (IS_DEV && CONFIG.hotDeploy && !createWorker()) return
-
+    
     let exp = getExpress(this.middleware)
     app = new LoadConfig(this).app
     app.exp = exp

@@ -21,7 +21,7 @@ export default class RoleController {
   async [Symbol()]() {
 		// console.log(this.service.role.getRole());
 		// return await this.model.User.find({});
-    return this.service.role.getRole()
+    // return this.service.role.getRole()
   }
 	@Get({ path: '/create', middleware:[testFunction4]})
 	async [Symbol()]() {
