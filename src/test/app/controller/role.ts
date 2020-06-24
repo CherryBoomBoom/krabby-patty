@@ -1,8 +1,6 @@
 import Controller from '../../../decorators/Controller'
 import Get from '../../../decorators/Get'
-import BaseModule from '../base.module'
-import KrabbyPatty from '../../../interface/KrabbyPatty';
-import app from '../app'
+import Post from '../../../decorators/Post';
 
 function testFunction3(req,res,next){
   console.log('中间件3');
@@ -17,10 +15,13 @@ function testFunction4(req,res,next){
 @Controller('/user')
 export default class RoleController {
 	readonly middleware=[testFunction3]
-  @Get('/login')
+  @Post('/login')
   async [Symbol()]() {
+    console.log(this);
+    // return this.service.role.getsadRole()
 		// console.log(this.service.role.getRole());
 		// return await this.model.User.find({});
+    // return this.service.role.getRole()
     // return this.service.role.getRole()
   }
 	@Get({ path: '/create', middleware:[testFunction4]})

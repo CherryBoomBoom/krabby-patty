@@ -1,13 +1,13 @@
-import BaseModule from '../base.module'
 import Service from '../../../decorators/Service'
 
 @Service()
 export default class RoleService {
   public async getRole() {
-    return true
+    return "getRole"
   }
   public async getsadRole() {
-    return true
+    // @ts-ignore
+    console.log(this.body);
   }
 
   public async S_User() {

@@ -16,18 +16,14 @@ const COM_CONFIG = require(COM_CONFIG_DIR).default
 const BASE_CONFIG = fs.existsSync(BASE_CONFIG_DIR) ? require(BASE_CONFIG_DIR).default : {}
 const PROD_CONFIG = fs.existsSync(PROD_CONFIG_DIR) ? require(PROD_CONFIG_DIR).default : {}
 const DEV_CONFIG = fs.existsSync(DEV_CONFIG_DIR) ? require(DEV_CONFIG_DIR).default : {}
-const SUCCESS_LOG = `\n🍔  Server run at \x1B[1;32mhttp://localhost:`
+const SUCCESS_LOG = `\n🍔  Server run at http://localhost:`
 
 export default class KrabbyPatty {
   public readonly baseDir: string = START_PATH
   public readonly baseFile: string = START_File
   public readonly middleware = []
 
-  public app: {
-    module: any
-    router: { [key: string]: { method: 'POST' | 'GET'; callback: Function; functionName: string } }
-    baseUrl: string
-  }
+  public app: { [key: string]: any }
   public exp: any
   public path: string
   public config: { [key: string]: any }
@@ -48,7 +44,7 @@ export default class KrabbyPatty {
 
     app = new LoadFood(this).app
     app.exp = require('http').createServer(app.exp)
-    app.exp.listen(CONFIG.port, () => console.info(`${SUCCESS_LOG}${CONFIG.port}\x1B[0m`))
+    app.exp.listen(CONFIG.port, () => console.info(`${SUCCESS_LOG}${CONFIG.port}`))
     new loadTsHelper(app)
   }
 }

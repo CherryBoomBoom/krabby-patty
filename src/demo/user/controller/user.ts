@@ -1,4 +1,4 @@
-import Router from '../../../decorators/Controller'
+import Controller from '../../../decorators/Controller'
 import Get from '../../../decorators/Get'
 import Controller from '../../../interface/Controller'
 import UserModule from '../base.module'
@@ -17,8 +17,8 @@ function testFunction5(req,res,next){
   next()
   console.log('中间件5s')
 }
-@Router('/ro')
-export default class RoleController extends UserModule {
+@Controller('/ro')
+export default class RoleController {
 	readonly middleware=[testFunction3,testFunction4]
   @Get('/login')
   public login() {

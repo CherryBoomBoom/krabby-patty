@@ -10,10 +10,10 @@ import TraceType from './decorators/Trace'
 
 export const krabbyPatty: typeof krabbyPattyType = krabbyPattyType
 export const Controller: typeof ControllerType = ControllerType
-export const Get: typeof GetType = GetType
-export const Post: typeof PostType = PostType
-export const Head: typeof HeadType = HeadType
-export const Connect: typeof ConnectType = ConnectType
-export const Options: typeof OptionsType = OptionsType
-export const Put: typeof PutType = PutType
-export const Trace: typeof PutType = TraceType
+export const GET: typeof GetType = GetType
+export const POST: typeof PostType = PostType
+export const HEAD: typeof HeadType = HeadType
+export const CONNECT: typeof ConnectType = ConnectType
+export const OPTIONS: typeof OptionsType = OptionsType
+export const PUT: typeof PutType = PutType
+export const TRACE: typeof PutType = TraceType

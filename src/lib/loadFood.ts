@@ -106,7 +106,7 @@ export default class LoadFood {
     let Router = express.Router()
     for (let i of middleware) Router.use(i)
     for (let path of Object.keys(param)) {
-      let { callback, method = 'POST', middleware = [] } = param[path]
+      let { callback, method = 'GET', middleware = [] } = param[path]
       if (!!middleware.length) for (let i of middleware) Router.use(path, i)
       const router = Router.route(path)
       router[method.toLowerCase()](async (req, res) => {
@@ -123,8 +123,8 @@ export default class LoadFood {
     ctx.url = req.url
     ctx.method = req.method
     ctx.headers = req.headers
-    let itemPrototype = Object.assign(this.app, { query: req.query })
-    return await callback.bind(itemPrototype).apply()
+    ctx.files = req.files
+    return await callback.bind(ctx).apply()
   }
 
   private getFilePaths(folderPath: string): { directory: string; filePaths: string[] } {
